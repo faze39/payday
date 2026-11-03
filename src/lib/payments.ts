@@ -156,3 +156,19 @@ export async function refreshAttempt(attemptId: string, store: Store = getStore(
   const link = await store.getLink(attempt.linkId);
   return { attempt, link, phase: mapStatus(attempt.status) };
 }
+
+/**
+ * A link as the payer sees it, plus the receipt id of the attempt that paid it
+ * (receipts are addressed by attempt id), so a paid link can point to its receipt.
+ */
+export async function getLinkView(id: string, store: Store = getStore(), now = new Date()) {
+  const link = await store.getLink(id);
+  if (!link) return null;
+  const view = publicLink(link, now);
+  let receiptId: string | null = null;
+  if (view.status === "paid") {
+    const attempts = await store.listAttemptsByLink(id);
+    receiptId = attempts.find((a) => a.status === "SUCCESS")?.id ?? null;
+  }
+  return { ...view, receiptId };
+}

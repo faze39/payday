@@ -11,6 +11,8 @@ export interface PublicLink {
   clientRef: string;
   expiresAt: string;
   status: "pending" | "paid" | "expired";
+  /** Attempt id of the payment that settled this link (only from GET /api/links/[id]). */
+  receiptId?: string | null;
 }
 
 export interface AttemptView {

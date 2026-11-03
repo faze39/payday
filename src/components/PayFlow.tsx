@@ -82,7 +82,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
     <div className="space-y-6">
       <Card>
         <p className="text-sm text-slate-500">{link.clientRef ? `Invoice for ${link.clientRef}` : "Payment request"}</p>
-        <p className="mt-1 text-4xl font-bold">${link.amountUsd}</p>
+        <p className="mt-1 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">${link.amountUsd}</p>
         <NgnEstimate usd={Number(link.amountUsd)} />
         <p className="mt-3 text-slate-700">{link.description}</p>
         <p className="mt-3 text-xs text-slate-500">
@@ -90,7 +90,17 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
         </p>
       </Card>
 
-      {link.status === "paid" && !attemptId && <Alert kind="success">This link has already been paid. Thank you!</Alert>}
+      {link.status === "paid" && !attemptId && (
+        <Alert kind="success">
+          This link has already been paid. Thank you!
+          {link.receiptId && (
+            <>
+              {" "}
+              <a className="font-semibold underline underline-offset-2" href={`/receipt/${link.receiptId}`}>View receipt</a>
+            </>
+          )}
+        </Alert>
+      )}
       {link.status === "expired" && !attemptId && <Alert kind="warn">This payment link has expired. Ask the freelancer to send a new one.</Alert>}
 
       {link.status === "pending" && !attemptId && (
@@ -161,7 +171,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
             )}
 
             {view.phase.phase === "delivered" && (
-              <a href={`/receipt/${a.id}`} className="inline-block rounded-lg bg-emerald-600 px-4 py-2 text-sm font-semibold text-white">View receipt</a>
+              <a href={`/receipt/${a.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">View receipt</a>
             )}
           </div>
         </Card>

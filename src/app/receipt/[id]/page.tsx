@@ -4,18 +4,32 @@ import { useEffect, useState } from "react";
 import type { AttemptView } from "@/lib/client-types";
 import { Alert, Card, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
+import { txExplorerUrl } from "@/lib/explorer";
 
-function TxList({ title, txs }: { title: string; txs: { hash: string; explorerUrl: string }[] }) {
+function shortHash(h: string) {
+  return h.length > 22 ? `${h.slice(0, 10)}…${h.slice(-8)}` : h;
+}
+
+function TxList({ title, chain, txs }: { title: string; chain?: string; txs: { hash: string; explorerUrl: string }[] }) {
   if (!txs.length) return null;
   return (
-    <div>
-      <p className="text-sm font-medium">{title}</p>
-      <ul className="mt-1 space-y-1">
-        {txs.map((t) => (
-          <li key={t.hash}>
-            <a className="break-all font-mono text-xs text-emerald-700 underline" href={t.explorerUrl} target="_blank" rel="noreferrer">{t.hash}</a>
-          </li>
-        ))}
+    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+      <ul className="mt-1.5 space-y-1">
+        {txs.map((t) => {
+          const url = txExplorerUrl(chain, t.hash, t.explorerUrl);
+          return (
+            <li key={t.hash} className="font-mono text-sm">
+              {url ? (
+                <a className="break-all text-emerald-700 underline underline-offset-2 hover:text-emerald-800" href={url} target="_blank" rel="noreferrer" title={t.hash}>
+                  {shortHash(t.hash)} ↗
+                </a>
+              ) : (
+                <span className="break-all text-slate-700">{t.hash}</span>
+              )}
+            </li>
+          );
+        })}
       </ul>
     </div>
   );
@@ -37,7 +51,7 @@ export default function ReceiptPage() {
     <Card>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold">Payment receipt</h1>
+          <h1 className="text-xl font-semibold tracking-tight text-slate-950">Payment receipt</h1>
           <StatusBadge kind={phase.phase} label={phase.label} />
         </div>
         {phase.phase !== "delivered" && <Alert kind="warn">This payment is not complete yet: {phase.guidance}</Alert>}
@@ -53,8 +67,8 @@ export default function ReceiptPage() {
             <dt className="text-slate-500">Updated</dt><dd>{new Date(a.updatedAt).toLocaleString()}</dd>
           </dl>
         )}
-        <TxList title="Client deposit transaction" txs={a.originTxs} />
-        <TxList title="USDC delivery transaction" txs={a.destinationTxs} />
+        <TxList title="Client deposit transaction" chain={a.originChain} txs={a.originTxs} />
+        <TxList title="USDC delivery transaction" chain={link?.payoutChain} txs={a.destinationTxs} />
         <p className="text-xs text-slate-500">
           Routed by NEAR Intents. You can also look up the deposit address on{" "}
           <a className="underline" href="https://explorer.near-intents.org" target="_blank" rel="noreferrer">explorer.near-intents.org</a>.
