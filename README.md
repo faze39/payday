@@ -2,7 +2,7 @@
 
 **Get paid in USDC by anyone, from any token on any chain, with one link.**
 
-> Status: hackathon build in progress (NEAR Hackathon, Nov 2026). Link creation, the live quote, status tracking, the receipt and the dashboard all work against the live 1Click API. The first mainnet payment from start to finish is scheduled for Day 4.
+> Status: live on mainnet at [payday-near.vercel.app](https://payday-near.vercel.app) (NEAR Hackathon, Nov 2026). Link creation, live quotes, status tracking, the receipt and the dashboard all work against the 1Click API. First real payment verified on 2026-11-03: 2.023 USDC on Solana delivered exactly 2.00 USDC on Base.
 
 ## The problem
 I'm a Nigerian freelance writer. International clients pay me in whatever they hold: USDT on Tron, ETH on Arbitrum, SOL. Every invoice turns into a conversation about which coin and which network. Mistakes cost money, bridges and middlemen take a cut, and confused clients put off paying.
@@ -40,7 +40,7 @@ Supported payout chains: **Base (default), Arbitrum, NEAR, Solana**. On 2026-11-
 ## Run it in 5 minutes
 Requires Node.js 20 or later.
 ```bash
-git clone https://github.com/<you>/payday && cd payday
+git clone https://github.com/faze39/payday && cd payday
 npm install
 npm run dev        # http://localhost:3000
 ```
@@ -76,7 +76,7 @@ npm run build      # production build
 - The naira figure is an approximate mid-market rate from open.er-api.com, for display only.
 
 ## What's next
-An invoice agent that drafts invoices and sends reminders for unpaid links. Webhook-based status. Wallet connect for one-click client payments.
+Demo video and X post for the hackathon submission. Optional later: an invoice agent, webhook-based status, and wallet connect for one-click client payments.
 
 ## License
 MIT
