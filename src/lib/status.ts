@@ -33,7 +33,7 @@ const MAP: Record<OneClickStatus, PhaseInfo> = {
     phase: "underpaid",
     label: "Underpaid",
     guidance:
-      "Less than the required amount arrived. Send the remaining amount to the same address before the deadline, or the deposit will be refunded to your refund address.",
+      "Less than the minimum amount for this quote has arrived. You can send the rest to the same deposit address; if the total is still below the minimum when the quote's deadline passes, the deposit is refunded to your refund address.",
     terminal: false,
   },
   SUCCESS: {
@@ -45,7 +45,7 @@ const MAP: Record<OneClickStatus, PhaseInfo> = {
   REFUNDED: {
     phase: "refunded",
     label: "Refunded",
-    guidance: "The payment could not complete, so the deposit was returned to your refund address. Request a new quote to try again.",
+    guidance: "The payment could not complete (for example, too little arrived before the deadline), so the deposit was returned to your refund address, minus any network refund fee. Request a new quote to try again.",
     terminal: true,
   },
   FAILED: {
@@ -66,6 +66,30 @@ export function mapStatus(status: string): PhaseInfo {
       terminal: false,
     }
   );
+}
+
+/**
+ * Amounts reported by 1Click /v0/status swapDetails (documented fields depositedAmountFormatted,
+ * refundedAmountFormatted). Not stored; read live for display only.
+ */
+export interface LiveAmounts {
+  depositedAmountFormatted: string | null;
+  refundedAmountFormatted: string | null;
+}
+
+/** Pick live amounts out of a status response's swapDetails, ignoring empty or zero values. */
+export function liveAmounts(d: { depositedAmountFormatted?: string | null; refundedAmountFormatted?: string | null } | null | undefined): LiveAmounts {
+  const clean = (v?: string | null) => (v && Number(v) > 0 ? v : null);
+  return { depositedAmountFormatted: clean(d?.depositedAmountFormatted), refundedAmountFormatted: clean(d?.refundedAmountFormatted) };
+}
+
+/**
+ * What the receipt shows as the client's payment: the amount actually deposited on-chain when 1Click reports it,
+ * otherwise the quoted amount, labelled honestly as a quote.
+ */
+export function clientPaidView(quotedFormatted: string, live: LiveAmounts | null | undefined): { label: string; amount: string; actual: boolean } {
+  if (live?.depositedAmountFormatted) return { label: "Client sent", amount: live.depositedAmountFormatted, actual: true };
+  return { label: "Quoted amount", amount: quotedFormatted, actual: false };
 }
 
 /** Link status shown on the dashboard. */

@@ -8,7 +8,7 @@ import {
   type Token,
 } from "./oneclick";
 import { newDashboardToken, newId, newLinkId, hashToken } from "./secrets";
-import { linkStatus, mapStatus } from "./status";
+import { linkStatus, mapStatus, liveAmounts, type LiveAmounts } from "./status";
 import { getStore, type PaymentAttempt, type PaymentLink, type Store } from "./store";
 import type { CreateLinkInput } from "./validation";
 
@@ -134,12 +134,14 @@ export async function createAttempt(
 }
 
 /** Fetch the latest status from 1Click, save it, and mark the link paid when the payment succeeds. */
-export async function refreshAttempt(attemptId: string, store: Store = getStore()) {
+export async function refreshAttempt(attemptId: string, store: Store = getStore(), opts: { withLiveAmounts?: boolean } = {}) {
   const attempt = await store.getAttempt(attemptId);
   if (!attempt) throw new UserError("Payment not found.", 404);
+  let live: LiveAmounts | null = null;
   if (!mapStatus(attempt.status).terminal) {
     const s = await getStatus(attempt.depositAddress, attempt.depositMemo ?? undefined);
     const d = s.swapDetails;
+    live = liveAmounts(d);
     const patch: Partial<PaymentAttempt> = {
       status: s.status,
       amountOutFormatted: d?.amountOutFormatted ?? null,
@@ -153,8 +155,14 @@ export async function refreshAttempt(attemptId: string, store: Store = getStore(
     Object.assign(attempt, patch);
     if (s.status === "SUCCESS") await store.markLinkPaid(attempt.linkId, attempt.updatedAt);
   }
+  else if (opts.withLiveAmounts) {
+    // Finished payments are not re-saved; this read only feeds the receipt's amounts and may fail harmlessly.
+    live = await getStatus(attempt.depositAddress, attempt.depositMemo ?? undefined)
+      .then((s) => liveAmounts(s.swapDetails))
+      .catch(() => null);
+  }
   const link = await store.getLink(attempt.linkId);
-  return { attempt, link, phase: mapStatus(attempt.status) };
+  return { attempt, link, phase: mapStatus(attempt.status), live };
 }
 
 /**

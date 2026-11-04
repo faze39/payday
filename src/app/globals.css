@@ -65,6 +65,11 @@ body {
 /* Hero flow */
 .flow-line { position: relative; display: block; height: 2px; width: 100%; min-width: 14px; border-radius: 9999px; background: rgb(255 255 255 / 0.12); overflow: visible; }
 .flow-line::after { content: ""; position: absolute; top: 50%; left: 0; width: 8px; height: 8px; margin-top: -4px; border-radius: 9999px; background: #6ee7b7; box-shadow: 0 0 12px #34d399; animation: flow 2.2s cubic-bezier(0.65,0,0.35,1) infinite; animation-delay: var(--d, 0s); }
+@media (max-width: 639px) {
+  .flow-line { width: 2px; height: 22px; min-width: 0; }
+  .flow-line::after { top: 0; left: 50%; margin-top: 0; margin-left: -4px; animation-name: flowv; }
+}
+@keyframes flowv { 0% { top: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { top: calc(100% - 8px); opacity: 0; } }
 @keyframes flow { 0% { left: 0; opacity: 0; } 15% { opacity: 1; } 85% { opacity: 1; } 100% { left: calc(100% - 8px); opacity: 0; } }
 .token-cycle > span { opacity: 0; animation: tokencycle 8s infinite; }
 @keyframes tokencycle { 0% { opacity: 0; transform: translateY(60%); } 4%, 18% { opacity: 1; transform: none; } 22%, 100% { opacity: 0; transform: translateY(-60%); } }

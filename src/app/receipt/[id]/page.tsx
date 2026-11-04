@@ -5,6 +5,7 @@ import type { AttemptView } from "@/lib/client-types";
 import { Alert, Eyebrow, Loading, Page, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { txExplorerUrl } from "@/lib/explorer";
+import { clientPaidView } from "@/lib/status";
 import { CountUp, Reveal, SuccessCheck } from "@/components/motion";
 
 function shortHash(h: string) {
@@ -47,12 +48,15 @@ export default function ReceiptPage() {
   if (error) return <Page><Alert>{error}</Alert></Page>;
   if (!view) return <Page><Loading label="Loading receipt…" /></Page>;
   const { attempt: a, link, phase } = view;
+  const paid = clientPaidView(a.amountInFormatted, view.live);
+  const excess = phase.phase === "delivered" ? view.live?.refundedAmountFormatted : null;
   const rows: [string, React.ReactNode, string?][] = link
     ? [
         ["For", link.description],
         ...(link.clientRef ? ([["Client", link.clientRef]] as [string, string][]) : []),
         ["Invoice amount", `$${link.amountUsd}`],
-        ["Client paid", `${a.amountInFormatted} ${a.originSymbol} (${a.originChain.toUpperCase()})`],
+        [paid.label, `${paid.amount} ${a.originSymbol} (${a.originChain.toUpperCase()})`],
+        ...(excess ? ([["Excess refunded", `${excess} ${a.originSymbol} to the client's refund address`]] as [string, string][]) : []),
         ["To", link.recipientAddress, "mono"],
         ["Deposit address", a.depositAddress, "mono"],
         ["Updated", new Date(a.updatedAt).toLocaleString()],

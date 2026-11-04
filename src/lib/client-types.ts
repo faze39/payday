@@ -1,5 +1,5 @@
 import type { PaymentAttempt } from "./store/types";
-import type { PhaseInfo } from "./status";
+import type { LiveAmounts, PhaseInfo } from "./status";
 
 export interface PublicLink {
   id: string;
@@ -19,6 +19,8 @@ export interface AttemptView {
   attempt: PaymentAttempt;
   phase: PhaseInfo;
   link: PublicLink | null;
+  /** Live on-chain amounts from 1Click status, when available. */
+  live?: LiveAmounts | null;
 }
 
 export interface TokenOption {

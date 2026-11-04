@@ -5,8 +5,8 @@ import { publicLink, refreshAttempt } from "@/lib/payments";
 export async function GET(_req: Request, ctx: RouteContext<"/api/attempts/[id]">) {
   try {
     const { id } = await ctx.params;
-    const { attempt, link, phase } = await refreshAttempt(id);
-    return Response.json({ attempt, phase, link: link ? publicLink(link) : null });
+    const { attempt, link, phase, live } = await refreshAttempt(id, undefined, { withLiveAmounts: true });
+    return Response.json({ attempt, phase, live, link: link ? publicLink(link) : null });
   } catch (err) {
     return errorResponse(err);
   }

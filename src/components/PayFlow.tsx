@@ -159,9 +159,25 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
                   </Field>
                 )}
                 <p className="text-xs leading-relaxed text-slate-600">
-                  Quote valid for about {minsLeft} more minute{minsLeft === 1 ? "" : "s"}. Sending slightly more is fine (the extra is refunded). Sending less than {a.minAmountIn === a.amountIn ? "the amount" : "the minimum"} will be refunded.
+                  Quote valid for about {minsLeft} more minute{minsLeft === 1 ? "" : "s"}. Sending slightly more is fine: anything above what the swap needs is refunded to your refund address afterwards. If less than {a.minAmountIn === a.amountIn ? "the amount" : "the minimum"} has arrived by the deadline, it is refunded instead, minus any network refund fee.
                 </p>
               </>
+            )}
+
+            {view.phase.phase === "underpaid" && (
+              <div className="space-y-3">
+                {view.live?.depositedAmountFormatted && (
+                  <p className="text-sm">Received so far: {view.live.depositedAmountFormatted} {a.originSymbol} (quoted amount {a.amountInFormatted} {a.originSymbol}).</p>
+                )}
+                <Field label="Same deposit address" hint={`Send only ${a.originSymbol} on the ${a.originChain.toUpperCase()} network.`}>
+                  <CopyText value={a.depositAddress} label="deposit address" />
+                </Field>
+                {a.depositMemo && (
+                  <Field label="Memo (required)">
+                    <CopyText value={a.depositMemo} label="memo" />
+                  </Field>
+                )}
+              </div>
             )}
 
             {quoteExpired && (
