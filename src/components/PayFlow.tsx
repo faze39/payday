@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import type { AttemptView, PublicLink, TokenOption } from "@/lib/client-types";
-import { Alert, Button, Card, CopyText, Field, api, inputClass } from "./ui";
+import { Alert, Button, Card, CopyText, Eyebrow, Field, Loading, Page, api, inputClass, primaryButtonClass } from "./ui";
 import { NgnEstimate } from "./NgnEstimate";
 import { StatusBadge } from "./StatusBadge";
 import { TokenPicker } from "./TokenPicker";
@@ -70,8 +70,8 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
     window.history.replaceState(null, "", window.location.pathname);
   }
 
-  if (loadError && !link) return <Alert>{loadError}</Alert>;
-  if (!link) return <p className="text-slate-500">Loading payment…</p>;
+  if (loadError && !link) return <Page><Alert>{loadError}</Alert></Page>;
+  if (!link) return <Page><Loading label="Loading payment…" /></Page>;
 
   const token = tokens.find((t) => t.assetId === originAsset);
   const a = view?.attempt;
@@ -79,35 +79,45 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
   const minsLeft = a ? Math.max(0, Math.ceil((new Date(a.quoteExpiresAt).getTime() - now) / 60000)) : 0;
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <p className="text-sm text-slate-500">{link.clientRef ? `Invoice for ${link.clientRef}` : "Payment request"}</p>
-        <p className="mt-1 text-4xl font-semibold tracking-tight text-slate-950 sm:text-5xl">${link.amountUsd}</p>
-        <NgnEstimate usd={Number(link.amountUsd)} />
-        <p className="mt-3 text-slate-700">{link.description}</p>
-        <p className="mt-3 text-xs text-slate-500">
-          The freelancer receives {link.amountUsd} USDC on {link.payoutChainName} at <span className="break-all font-mono">{link.recipientAddress}</span>
-        </p>
-      </Card>
+    <Page>
+    <div className="space-y-4 sm:space-y-5">
+      <div className="animate-rise relative isolate overflow-hidden rounded-3xl bg-slate-950 p-6 text-white shadow-[0_30px_60px_-30px_rgba(2,6,23,0.6)] sm:p-8">
+        <div className="absolute -right-24 -top-24 -z-10 h-72 w-72 rounded-full bg-[radial-gradient(closest-side,rgba(16,185,129,0.45),transparent)] blur-xl" aria-hidden="true" />
+        <div className="bg-grid-dark absolute inset-0 -z-10 opacity-60 [mask-image:linear-gradient(to_left,black,transparent_70%)]" aria-hidden="true" />
+        <div className="flex items-start justify-between gap-3">
+          <Eyebrow className="!text-emerald-300">{link.clientRef ? `Invoice for ${link.clientRef}` : "Payment request"}</Eyebrow>
+          {link.status !== "pending" && <StatusBadge kind={link.status} label={link.status} />}
+        </div>
+        <p className="mt-3 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl">${link.amountUsd}</p>
+        <NgnEstimate usd={Number(link.amountUsd)} className="mt-1 text-slate-300" />
+        <p className="mt-4 text-base leading-relaxed text-slate-100">{link.description}</p>
+        <div className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-slate-300">
+          The freelancer receives <span className="font-semibold text-white">{link.amountUsd} USDC</span> on {link.payoutChainName} at{" "}
+          <span className="break-all font-mono text-slate-200">{link.recipientAddress}</span>
+        </div>
+      </div>
 
       {link.status === "paid" && !attemptId && (
-        <Alert kind="success">
-          This link has already been paid. Thank you!
-          {link.receiptId && (
-            <>
-              {" "}
-              <a className="font-semibold underline underline-offset-2" href={`/receipt/${link.receiptId}`}>View receipt</a>
-            </>
-          )}
-        </Alert>
+        <div className="animate-rise delay-1 flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="flex items-center gap-3">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_6px_16px_-6px_rgba(5,150,105,0.7)]" aria-hidden="true">
+              <svg viewBox="0 0 16 16" className="h-5 w-5"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </span>
+            <p className="font-semibold text-emerald-950">This link has already been paid. Thank you!</p>
+          </div>
+          {link.receiptId && <a className={primaryButtonClass} href={`/receipt/${link.receiptId}`}>View receipt →</a>}
+        </div>
       )}
       {link.status === "expired" && !attemptId && <Alert kind="warn">This payment link has expired. Ask the freelancer to send a new one.</Alert>}
 
       {link.status === "pending" && !attemptId && (
         <Card>
           <div className="space-y-4">
-            <h2 className="text-lg font-semibold">1. Choose what you want to pay with</h2>
-            {tokens.length ? <TokenPicker tokens={tokens} value={originAsset} onChange={setOriginAsset} /> : <p className="text-sm text-slate-500">Loading tokens…</p>}
+            <div>
+              <Eyebrow>Step 1</Eyebrow>
+              <h2 className="mt-1 text-lg font-semibold tracking-tight text-slate-950">Choose what you want to pay with</h2>
+            </div>
+            {tokens.length ? <TokenPicker tokens={tokens} value={originAsset} onChange={setOriginAsset} /> : <div className="h-40 animate-pulse rounded-2xl bg-slate-100" />}
             {token && (
               <Field
                 label={`2. Your refund address on ${token.blockchain.toUpperCase()}`}
@@ -123,13 +133,13 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
         </Card>
       )}
 
-      {attemptId && !a && <p className="text-slate-500">Loading payment status…</p>}
+      {attemptId && !a && <Loading label="Loading payment status…" />}
 
       {a && view && (
         <Card>
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold">Payment status</h2>
+              <h2 className="text-lg font-semibold tracking-tight text-slate-950">Payment status</h2>
               <StatusBadge kind={view.phase.phase} label={view.phase.label} />
             </div>
             <Alert kind={view.phase.phase === "delivered" ? "success" : ["failed"].includes(view.phase.phase) ? "error" : ["underpaid", "refunded"].includes(view.phase.phase) ? "warn" : "info"}>
@@ -149,7 +159,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
                     <CopyText value={a.depositMemo} label="memo" />
                   </Field>
                 )}
-                <p className="text-xs text-slate-500">
+                <p className="text-xs leading-relaxed text-slate-600">
                   Quote valid for about {minsLeft} more minute{minsLeft === 1 ? "" : "s"}. Sending slightly more is fine (the extra is refunded). Sending less than {a.minAmountIn === a.amountIn ? "the amount" : "the minimum"} will be refunded.
                 </p>
               </>
@@ -165,17 +175,18 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
             {(view.phase.phase === "refunded" || view.phase.phase === "failed") && (
               <div className="space-y-2 text-sm">
                 {a.refundedAmountFormatted && a.refundedAmountFormatted !== "0" && <p>Refunded: {a.refundedAmountFormatted} {a.originSymbol} to {a.refundTo}</p>}
-                {a.refundReason && <p className="text-slate-500">Reason: {a.refundReason}</p>}
+                {a.refundReason && <p className="text-slate-600">Reason: {a.refundReason}</p>}
                 <Button onClick={startOver}>Try again with a new quote</Button>
               </div>
             )}
 
             {view.phase.phase === "delivered" && (
-              <a href={`/receipt/${a.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-emerald-600 px-5 py-2.5 text-sm font-semibold text-white hover:bg-emerald-700">View receipt</a>
+              <a href={`/receipt/${a.id}`} className={primaryButtonClass}>View receipt →</a>
             )}
           </div>
         </Card>
       )}
     </div>
+    </Page>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 import { useState, type FormEvent } from "react";
 import { PAYOUT_CHAINS, DEFAULT_PAYOUT_CHAIN, type PayoutChainId } from "@/lib/chains";
-import { Alert, Button, Card, CopyText, Field, api, inputClass } from "./ui";
+import { Alert, Button, Card, CopyText, Eyebrow, Field, api, inputClass, primaryButtonClass } from "./ui";
 import { NgnEstimate } from "./NgnEstimate";
 
 interface Created { link: { id: string }; dashboardToken: string }
@@ -44,8 +44,8 @@ export function CreateLinkForm() {
   if (created) {
     const origin = window.location.origin;
     return (
-      <Card>
-        <div className="space-y-4">
+      <Card className="!rounded-[27px]">
+        <div className="space-y-5">
           <Alert kind="success">Your payment link is ready. Send it to your client.</Alert>
           <Field label="Payment link">
             <CopyText value={`${origin}/pay/${created.link.id}`} label="payment link" />
@@ -53,9 +53,9 @@ export function CreateLinkForm() {
           <Field label="Your private dashboard link" hint="Keep this secret. Anyone with it can see your links. It is saved in this browser too.">
             <CopyText value={`${origin}/dashboard#k=${created.dashboardToken}`} label="dashboard link" />
           </Field>
-          <div className="flex gap-3">
-            <a className="text-sm font-medium text-emerald-700 underline" href={`/pay/${created.link.id}`}>Open payment page</a>
-            <button type="button" className="text-sm text-slate-600 underline" onClick={() => setCreated(null)}>Create another</button>
+          <div className="flex flex-wrap items-center gap-3">
+            <a className={primaryButtonClass} href={`/pay/${created.link.id}`}>Open payment page →</a>
+            <button type="button" className="min-h-11 rounded-xl px-4 text-sm font-semibold text-slate-800 hover:bg-slate-100" onClick={() => setCreated(null)}>Create another</button>
           </div>
         </div>
       </Card>
@@ -63,7 +63,14 @@ export function CreateLinkForm() {
   }
 
   return (
-    <Card>
+    <Card className="!rounded-[27px]">
+      <div className="mb-5 flex items-center justify-between">
+        <div>
+          <Eyebrow>New payment link</Eyebrow>
+          <p className="mt-1 text-xl font-semibold tracking-tight text-slate-950">Request a payment</p>
+        </div>
+        <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-semibold text-emerald-800 ring-1 ring-inset ring-emerald-200">USDC</span>
+      </div>
       <form onSubmit={onSubmit} className="space-y-4" noValidate>
         <Field label="Receive USDC on" error={errors.payoutChain}>
           <select name="payoutChain" className={inputClass} value={chain} onChange={(e) => setChain(e.target.value as PayoutChainId)}>
@@ -89,7 +96,9 @@ export function CreateLinkForm() {
           <input name="expiresInDays" type="number" min={1} max={30} defaultValue={7} className={inputClass} />
         </Field>
         {formError && <Alert>{formError}</Alert>}
-        <Button type="submit" disabled={busy}>{busy ? "Creating…" : "Create payment link"}</Button>
+        <div className="pt-1 [&>button]:w-full">
+          <Button type="submit" disabled={busy}>{busy ? "Creating…" : "Create payment link"}</Button>
+        </div>
       </form>
     </Card>
   );

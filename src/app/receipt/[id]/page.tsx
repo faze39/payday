@@ -2,7 +2,7 @@
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import type { AttemptView } from "@/lib/client-types";
-import { Alert, Card, api } from "@/components/ui";
+import { Alert, Eyebrow, Loading, Page, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { txExplorerUrl } from "@/lib/explorer";
 
@@ -13,15 +13,15 @@ function shortHash(h: string) {
 function TxList({ title, chain, txs }: { title: string; chain?: string; txs: { hash: string; explorerUrl: string }[] }) {
   if (!txs.length) return null;
   return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{title}</p>
+    <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+      <Eyebrow>{title}</Eyebrow>
       <ul className="mt-1.5 space-y-1">
         {txs.map((t) => {
           const url = txExplorerUrl(chain, t.hash, t.explorerUrl);
           return (
             <li key={t.hash} className="font-mono text-sm">
               {url ? (
-                <a className="break-all text-emerald-700 underline underline-offset-2 hover:text-emerald-800" href={url} target="_blank" rel="noreferrer" title={t.hash}>
+                <a className="break-all font-medium text-emerald-700 underline decoration-emerald-300 underline-offset-4 hover:text-emerald-900" href={url} target="_blank" rel="noreferrer" title={t.hash}>
                   {shortHash(t.hash)} ↗
                 </a>
               ) : (
@@ -43,37 +43,62 @@ export default function ReceiptPage() {
     api<AttemptView>(`/api/attempts/${id}`).then(setView).catch((e) => setError(e.message));
   }, [id]);
 
-  if (error) return <Alert>{error}</Alert>;
-  if (!view) return <p className="text-slate-500">Loading receipt…</p>;
+  if (error) return <Page><Alert>{error}</Alert></Page>;
+  if (!view) return <Page><Loading label="Loading receipt…" /></Page>;
   const { attempt: a, link, phase } = view;
+  const rows: [string, React.ReactNode, string?][] = link
+    ? [
+        ["For", link.description],
+        ...(link.clientRef ? ([["Client", link.clientRef]] as [string, string][]) : []),
+        ["Invoice amount", `$${link.amountUsd}`],
+        ["Client paid", `${a.amountInFormatted} ${a.originSymbol} (${a.originChain.toUpperCase()})`],
+        ["To", link.recipientAddress, "mono"],
+        ["Deposit address", a.depositAddress, "mono"],
+        ["Updated", new Date(a.updatedAt).toLocaleString()],
+      ]
+    : [];
 
   return (
-    <Card>
-      <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold tracking-tight text-slate-950">Payment receipt</h1>
-          <StatusBadge kind={phase.phase} label={phase.label} />
+    <Page>
+      <article className="animate-rise overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-[0_1px_2px_rgba(15,23,42,0.05),0_24px_56px_-28px_rgba(15,23,42,0.28)]">
+        <header className="relative isolate overflow-hidden bg-slate-950 px-6 py-6 text-white sm:px-8 sm:py-7">
+          <div className="absolute -left-16 -top-28 -z-10 h-64 w-80 rounded-full bg-[radial-gradient(closest-side,rgba(16,185,129,0.5),transparent)] blur-xl" aria-hidden="true" />
+          <div className="flex items-center justify-between gap-3">
+            <h1 className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-300">Payment receipt</h1>
+            <StatusBadge kind={phase.phase} label={phase.label} />
+          </div>
+          {link && (
+            <>
+              <p className="mt-4 text-sm text-slate-300">Freelancer received</p>
+              <p className="mt-1 text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
+                {a.amountOutFormatted ?? "—"} <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
+              </p>
+              <p className="mt-1 text-sm text-slate-300">on {link.payoutChainName}</p>
+            </>
+          )}
+        </header>
+        <div className="space-y-4 p-5 sm:p-7">
+          {phase.phase !== "delivered" && <Alert kind="warn">This payment is not complete yet: {phase.guidance}</Alert>}
+          {rows.length > 0 && (
+            <dl className="divide-y divide-slate-100 text-sm">
+              {rows.map(([k, v, m]) => (
+                <div key={k} className="grid gap-1 py-2.5 sm:grid-cols-[9.5rem_1fr] sm:gap-4">
+                  <dt className="text-slate-600">{k}</dt>
+                  <dd className={m ? "break-all font-mono text-xs leading-5 text-slate-900" : "font-medium text-slate-950"}>{v}</dd>
+                </div>
+              ))}
+            </dl>
+          )}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <TxList title="Client deposit transaction" chain={a.originChain} txs={a.originTxs} />
+            <TxList title="USDC delivery transaction" chain={link?.payoutChain} txs={a.destinationTxs} />
+          </div>
+          <p className="text-xs leading-relaxed text-slate-600">
+            Routed by NEAR Intents. You can also look up the deposit address on{" "}
+            <a className="font-medium text-slate-900 underline underline-offset-2" href="https://explorer.near-intents.org" target="_blank" rel="noreferrer">explorer.near-intents.org</a>.
+          </p>
         </div>
-        {phase.phase !== "delivered" && <Alert kind="warn">This payment is not complete yet: {phase.guidance}</Alert>}
-        {link && (
-          <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 text-sm">
-            <dt className="text-slate-500">For</dt><dd>{link.description}</dd>
-            {link.clientRef && (<><dt className="text-slate-500">Client</dt><dd>{link.clientRef}</dd></>)}
-            <dt className="text-slate-500">Invoice amount</dt><dd>${link.amountUsd}</dd>
-            <dt className="text-slate-500">Client paid</dt><dd>{a.amountInFormatted} {a.originSymbol} ({a.originChain.toUpperCase()})</dd>
-            <dt className="text-slate-500">Freelancer received</dt><dd className="font-semibold">{a.amountOutFormatted ?? "—"} USDC on {link.payoutChainName}</dd>
-            <dt className="text-slate-500">To</dt><dd className="break-all font-mono text-xs">{link.recipientAddress}</dd>
-            <dt className="text-slate-500">Deposit address</dt><dd className="break-all font-mono text-xs">{a.depositAddress}</dd>
-            <dt className="text-slate-500">Updated</dt><dd>{new Date(a.updatedAt).toLocaleString()}</dd>
-          </dl>
-        )}
-        <TxList title="Client deposit transaction" chain={a.originChain} txs={a.originTxs} />
-        <TxList title="USDC delivery transaction" chain={link?.payoutChain} txs={a.destinationTxs} />
-        <p className="text-xs text-slate-500">
-          Routed by NEAR Intents. You can also look up the deposit address on{" "}
-          <a className="underline" href="https://explorer.near-intents.org" target="_blank" rel="noreferrer">explorer.near-intents.org</a>.
-        </p>
-      </div>
-    </Card>
+      </article>
+    </Page>
   );
 }
