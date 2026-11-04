@@ -6,6 +6,7 @@ import { Alert, Eyebrow, Loading, Page, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { txExplorerUrl } from "@/lib/explorer";
 import { clientPaidView } from "@/lib/status";
+import { NgnEstimate } from "@/components/NgnEstimate";
 import { CountUp, Reveal, SuccessCheck } from "@/components/motion";
 
 function shortHash(h: string) {
@@ -79,6 +80,7 @@ export default function ReceiptPage() {
                 {a.amountOutFormatted ? <CountUp value={a.amountOutFormatted} /> : "—"} <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
               </p>
               <p className="mt-1 text-sm text-slate-300">on {link.payoutChainName}</p>
+              {a.amountOutFormatted && <NgnEstimate usd={Number(a.amountOutFormatted)} className="mt-1 text-slate-400" />}
             </>
           )}
         </header>

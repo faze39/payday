@@ -47,6 +47,17 @@ export default function Home() {
               ))}
             </ul>
             <FlowVisual />
+            <div className="mt-6 max-w-xl space-y-2 text-sm text-slate-300">
+              <p>Built by a Nigerian freelancer tired of losing money to cross-chain payment hassle.</p>
+              <a
+                href="https://solscan.io/tx/547PEU3gUVs6qXJiJCPDniw64XRb8TicPRcZiymfpoD4MkPLobvvQ8XCMzB4ewkEuNeATda5uwTpRMxLZ2WMj61W"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-medium text-emerald-300 underline-offset-4 hover:underline"
+              >
+                Proof: a real mainnet payment (client deposit on Solscan) ↗
+              </a>
+            </div>
           </div>
 
           <section aria-labelledby="create" className="animate-rise delay-2 text-slate-900">
