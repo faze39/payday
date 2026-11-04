@@ -1,4 +1,6 @@
 import { CreateLinkForm } from "@/components/CreateLinkForm";
+import { FlowVisual } from "@/components/FlowVisual";
+import { Reveal, Tilt } from "@/components/motion";
 
 const STEPS = [
   { title: "Create a link", body: "Set the amount in USD and the wallet where you want USDC. No sign-up needed." },
@@ -44,6 +46,7 @@ export default function Home() {
                 </li>
               ))}
             </ul>
+            <FlowVisual />
           </div>
 
           <section aria-labelledby="create" className="animate-rise delay-2 text-slate-900">
@@ -57,17 +60,21 @@ export default function Home() {
 
       <section aria-labelledby="how" className="relative">
         <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-20">
-          <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">How it works</p>
-          <h2 id="how" className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
-            One link. Any token in, USDC out.
-          </h2>
-          <ol className="mt-8 grid gap-px overflow-hidden rounded-3xl border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-4">
+          <Reveal>
+            <p className="font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-700">How it works</p>
+            <h2 id="how" className="mt-2 max-w-xl text-2xl font-semibold tracking-tight text-slate-950 sm:text-4xl">
+              One link. Any token in, USDC out.
+            </h2>
+          </Reveal>
+          <ol className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {STEPS.map((s, i) => (
-              <li key={s.title} className="group bg-white p-6 transition hover:bg-emerald-50/40 sm:p-7">
-                <span className="font-mono text-xs font-medium text-emerald-700">0{i + 1}</span>
-                <h3 className="mt-6 text-lg font-semibold tracking-tight text-slate-950">{s.title}</h3>
-                <p className="mt-2 text-sm leading-relaxed text-slate-700">{s.body}</p>
-              </li>
+              <Reveal as="li" key={s.title} delay={i * 90}>
+                <Tilt className="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:shadow-[0_24px_48px_-24px_rgba(15,23,42,0.3)] sm:p-7">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 font-mono text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">0{i + 1}</span>
+                  <h3 className="mt-5 text-lg font-semibold tracking-tight text-slate-950">{s.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-700">{s.body}</p>
+                </Tilt>
+              </Reveal>
             ))}
           </ol>
         </div>

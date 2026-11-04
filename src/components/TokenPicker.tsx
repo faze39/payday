@@ -23,7 +23,7 @@ export function TokenPicker({ tokens, value, onChange }: { tokens: TokenOption[]
             type="button"
             key={t.assetId}
             onClick={() => onChange(t.assetId)}
-            className={`rounded-xl border px-3.5 py-2.5 text-left text-sm transition ${value === t.assetId ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20" : "border-slate-200 bg-white hover:-translate-y-px hover:border-slate-300 hover:shadow-sm"}`}
+            className={`rounded-xl border px-3.5 py-2.5 text-left text-sm transition ${value === t.assetId ? "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20" : "border-slate-200 bg-white hover:-translate-y-0.5 hover:border-slate-300 active:scale-[0.98] hover:shadow-sm"}`}
           >
             <span className="block font-semibold text-slate-950">{t.symbol}</span> <span className="block font-mono text-[11px] uppercase tracking-wide text-slate-600">on {t.blockchain}</span>
           </button>

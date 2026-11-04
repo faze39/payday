@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Alert, Eyebrow, Loading, Page, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { DASHBOARD_KEY_STORAGE } from "@/components/CreateLinkForm";
+import { CountUp } from "@/components/motion";
 import type { PublicLink } from "@/lib/client-types";
 
 type Row = PublicLink & { receivedUsdc: string | null; paidAttemptId: string | null; attempts: number };
@@ -38,7 +39,7 @@ export default function DashboardPage() {
           <div className="bg-grid-dark absolute inset-0 -z-10 opacity-60 [mask-image:linear-gradient(to_left,black,transparent_70%)]" aria-hidden="true" />
           <Eyebrow className="!text-emerald-300">Total received</Eyebrow>
           <p className="mt-2 text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
-            {data.totalReceived} <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
+            <CountUp value={data.totalReceived} /> <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
           </p>
           <p className="mt-2 text-sm text-slate-300">
             {data.links.length} link{data.links.length === 1 ? "" : "s"} · {paidCount} paid
@@ -53,8 +54,8 @@ export default function DashboardPage() {
               <Link href="/" className="text-sm font-semibold text-emerald-700 hover:text-emerald-900">+ New link</Link>
             </div>
             <ul className="divide-y divide-slate-100">
-              {data.links.map((l) => (
-                <li key={l.id} className="flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition hover:bg-slate-50 sm:px-6">
+              {data.links.map((l, i) => (
+                <li key={l.id} className="animate-rise flex flex-wrap items-center justify-between gap-3 px-5 py-4 transition hover:bg-slate-50 sm:px-6" style={{ animationDelay: `${120 + i * 60}ms` }}>
                   <div className="min-w-0">
                     <p className="truncate font-semibold text-slate-950">
                       <span className="tabular-nums">${l.amountUsd}</span> <span className="text-slate-400">·</span> {l.description}

@@ -38,7 +38,7 @@ export const inputClass =
   "w-full rounded-xl border border-slate-300 bg-slate-50/60 px-3.5 py-3 text-base text-slate-950 shadow-[inset_0_1px_1px_rgba(15,23,42,0.04)] transition placeholder:text-slate-500 hover:border-slate-400 focus:border-emerald-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-emerald-500/15 sm:text-sm";
 
 export const primaryButtonClass =
-  "group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_rgba(2,6,23,0.5)] ring-1 ring-inset ring-white/10 transition hover:-translate-y-px hover:bg-emerald-700 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:bg-slate-950 sm:w-auto";
+  "btn-shine group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_-8px_rgba(2,6,23,0.5)] ring-1 ring-inset ring-white/10 transition duration-200 hover:-translate-y-px hover:bg-emerald-700 hover:shadow-[0_12px_28px_-10px_rgba(5,150,105,0.6)] active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 disabled:hover:bg-slate-950 sm:w-auto";
 
 export function Button({ children, disabled, onClick, type = "button" }: { children: ReactNode; disabled?: boolean; onClick?: () => void; type?: "button" | "submit" }) {
   return (
@@ -55,7 +55,7 @@ export function CopyText({ value, label }: { value: string; label?: string }) {
       <code className="flex flex-1 items-center break-all px-2 py-1.5 font-mono text-sm text-slate-900">{value}</code>
       <button
         type="button"
-        className={`min-h-9 shrink-0 rounded-lg px-3.5 text-xs font-semibold transition ${copied ? "bg-emerald-600 text-white" : "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 hover:ring-slate-300"}`}
+        className={`min-h-9 shrink-0 rounded-lg px-3.5 text-xs font-semibold transition active:scale-95 ${copied ? "bg-emerald-600 text-white" : "bg-white text-slate-900 shadow-sm ring-1 ring-slate-200 hover:ring-slate-300"}`}
         onClick={() => navigator.clipboard.writeText(value).then(() => { setCopied(true); setTimeout(() => setCopied(false), 1500); })}
         aria-label={`Copy ${label ?? "value"}`}
       >

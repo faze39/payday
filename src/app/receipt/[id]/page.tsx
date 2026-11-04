@@ -5,6 +5,7 @@ import type { AttemptView } from "@/lib/client-types";
 import { Alert, Eyebrow, Loading, Page, api } from "@/components/ui";
 import { StatusBadge } from "@/components/StatusBadge";
 import { txExplorerUrl } from "@/lib/explorer";
+import { CountUp, Reveal, SuccessCheck } from "@/components/motion";
 
 function shortHash(h: string) {
   return h.length > 22 ? `${h.slice(0, 10)}…${h.slice(-8)}` : h;
@@ -69,9 +70,9 @@ export default function ReceiptPage() {
           </div>
           {link && (
             <>
-              <p className="mt-4 text-sm text-slate-300">Freelancer received</p>
+              <div className="mt-4 flex items-center gap-3">{phase.phase === "delivered" && <SuccessCheck size={28} />}<p className="text-sm text-slate-300">Freelancer received</p></div>
               <p className="mt-1 text-4xl font-semibold tracking-[-0.035em] sm:text-5xl">
-                {a.amountOutFormatted ?? "—"} <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
+                {a.amountOutFormatted ? <CountUp value={a.amountOutFormatted} /> : "—"} <span className="text-2xl font-medium text-emerald-300 sm:text-3xl">USDC</span>
               </p>
               <p className="mt-1 text-sm text-slate-300">on {link.payoutChainName}</p>
             </>
@@ -89,10 +90,10 @@ export default function ReceiptPage() {
               ))}
             </dl>
           )}
-          <div className="grid gap-3 sm:grid-cols-2">
+          <Reveal className="grid gap-3 sm:grid-cols-2">
             <TxList title="Client deposit transaction" chain={a.originChain} txs={a.originTxs} />
             <TxList title="USDC delivery transaction" chain={link?.payoutChain} txs={a.destinationTxs} />
-          </div>
+          </Reveal>
           <p className="text-xs leading-relaxed text-slate-600">
             Routed by NEAR Intents. You can also look up the deposit address on{" "}
             <a className="font-medium text-slate-900 underline underline-offset-2" href="https://explorer.near-intents.org" target="_blank" rel="noreferrer">explorer.near-intents.org</a>.

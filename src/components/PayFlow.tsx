@@ -4,6 +4,7 @@ import type { AttemptView, PublicLink, TokenOption } from "@/lib/client-types";
 import { Alert, Button, Card, CopyText, Eyebrow, Field, Loading, Page, api, inputClass, primaryButtonClass } from "./ui";
 import { NgnEstimate } from "./NgnEstimate";
 import { StatusBadge } from "./StatusBadge";
+import { CountUp, SuccessCheck } from "./motion";
 import { TokenPicker } from "./TokenPicker";
 
 const POLL_MS = 5000;
@@ -88,7 +89,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
           <Eyebrow className="!text-emerald-300">{link.clientRef ? `Invoice for ${link.clientRef}` : "Payment request"}</Eyebrow>
           {link.status !== "pending" && <StatusBadge kind={link.status} label={link.status} />}
         </div>
-        <p className="mt-3 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl">${link.amountUsd}</p>
+        <p className="mt-3 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl">$<CountUp value={link.amountUsd} /></p>
         <NgnEstimate usd={Number(link.amountUsd)} className="mt-1 text-slate-300" />
         <p className="mt-4 text-base leading-relaxed text-slate-100">{link.description}</p>
         <div className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-slate-300">
@@ -100,9 +101,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
       {link.status === "paid" && !attemptId && (
         <div className="animate-rise delay-1 flex flex-col gap-4 rounded-3xl border border-emerald-200 bg-gradient-to-br from-emerald-50 to-white p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div className="flex items-center gap-3">
-            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-emerald-600 text-white shadow-[0_6px_16px_-6px_rgba(5,150,105,0.7)]" aria-hidden="true">
-              <svg viewBox="0 0 16 16" className="h-5 w-5"><path d="m3.5 8.5 3 3 6-7" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            </span>
+            <SuccessCheck />
             <p className="font-semibold text-emerald-950">This link has already been paid. Thank you!</p>
           </div>
           {link.receiptId && <a className={primaryButtonClass} href={`/receipt/${link.receiptId}`}>View receipt →</a>}
@@ -181,7 +180,7 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
             )}
 
             {view.phase.phase === "delivered" && (
-              <a href={`/receipt/${a.id}`} className={primaryButtonClass}>View receipt →</a>
+              <div className="flex items-center gap-3"><SuccessCheck size={36} /><a href={`/receipt/${a.id}`} className={primaryButtonClass}>View receipt →</a></div>
             )}
           </div>
         </Card>
