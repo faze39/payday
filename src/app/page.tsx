@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { CreateLinkForm } from "@/components/CreateLinkForm";
 import { FlowVisual } from "@/components/FlowVisual";
 import { Reveal, Tilt } from "@/components/motion";
@@ -11,6 +12,13 @@ const STEPS = [
 
 const POINTS = ["USDC on Base by default", "No sign-up", "Non-custodial"];
 
+const MORE = [
+  { href: "/features", label: "Features", body: "Line items, CSV export, agent API, and what is live today." },
+  { href: "/how-it-works", label: "How it works", body: "The full path from link create to receipt, including refunds." },
+  { href: "/pricing", label: "Pricing", body: "Free during the hackathon. Only on-chain and 1Click costs apply." },
+  { href: "/faq", label: "FAQ", body: "Custody, payout chains, quotes, agents, and the NEAR contract scaffold." },
+];
+
 export default function Home() {
   return (
     <div>
@@ -22,7 +30,7 @@ export default function Home() {
         />
         <div className="mx-auto grid max-w-6xl items-start gap-10 px-4 pb-14 pt-10 sm:px-6 sm:pt-16 lg:grid-cols-[1.05fr_1fr] lg:gap-14 lg:pb-24 lg:pt-24">
           <div className="space-y-6 lg:sticky lg:top-28">
-            <span className="animate-rise inline-flex items-center gap-2 rounded-full border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-300">
+            <span className="animate-rise inline-flex items-center gap-2 rounded-lg border border-emerald-400/30 bg-emerald-400/10 px-3 py-1 font-mono text-[11px] font-medium uppercase tracking-[0.14em] text-emerald-300">
               <span className="relative flex h-1.5 w-1.5" aria-hidden="true">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
                 <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400" />
@@ -60,8 +68,10 @@ export default function Home() {
             </div>
           </div>
 
-          <section aria-labelledby="create" className="animate-rise delay-2 text-slate-900">
-            <h2 id="create" className="sr-only">Create a payment link</h2>
+          <section id="create" aria-labelledby="create-heading" className="animate-rise delay-2 scroll-mt-24 text-slate-900">
+            <h2 id="create-heading" className="sr-only">
+              Create a payment link
+            </h2>
             <div className="rounded-[28px] bg-gradient-to-b from-white/20 to-white/5 p-px shadow-[0_40px_80px_-30px_rgba(16,185,129,0.45)]">
               <CreateLinkForm />
             </div>
@@ -81,13 +91,43 @@ export default function Home() {
             {STEPS.map((s, i) => (
               <Reveal as="li" key={s.title} delay={i * 90}>
                 <Tilt className="h-full rounded-3xl border border-slate-200 bg-white p-6 shadow-[0_1px_2px_rgba(15,23,42,0.04)] hover:shadow-[0_24px_48px_-24px_rgba(15,23,42,0.3)] sm:p-7">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 font-mono text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">0{i + 1}</span>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 font-mono text-xs font-semibold text-emerald-700 ring-1 ring-inset ring-emerald-200">
+                    0{i + 1}
+                  </span>
                   <h3 className="mt-5 text-lg font-semibold tracking-tight text-slate-950">{s.title}</h3>
                   <p className="mt-2 text-sm leading-relaxed text-slate-700">{s.body}</p>
                 </Tilt>
               </Reveal>
             ))}
           </ol>
+          <p className="mt-6 text-sm text-slate-600">
+            Want the longer version, including refunds and expired quotes?{" "}
+            <Link href="/how-it-works" className="font-semibold text-slate-950 underline-offset-4 hover:underline">
+              Read How it works
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
+      <section aria-labelledby="explore" className="border-t border-slate-200 bg-white">
+        <div className="mx-auto max-w-6xl px-4 py-14 sm:px-6 sm:py-16">
+          <h2 id="explore" className="text-2xl font-semibold tracking-tight text-slate-950 sm:text-3xl">
+            More on the site
+          </h2>
+          <ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            {MORE.map((m) => (
+              <li key={m.href}>
+                <Link
+                  href={m.href}
+                  className="block h-full rounded-2xl border border-slate-200 bg-slate-50 p-5 transition hover:border-slate-300 hover:bg-white"
+                >
+                  <span className="text-base font-semibold text-slate-950">{m.label}</span>
+                  <p className="mt-2 text-sm leading-relaxed text-slate-700">{m.body}</p>
+                </Link>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
     </div>
