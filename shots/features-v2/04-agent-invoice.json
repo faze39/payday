@@ -1,0 +1,40 @@
+{
+    "schema": "payday.invoice.v1",
+    "id": "__PrhOMW",
+    "status": "pending",
+    "amount": {
+        "usd": "75",
+        "currency": "USDC",
+        "payoutChain": "base",
+        "payoutChainName": "Base"
+    },
+    "recipient": "0x2527D02599Ba641c19FEa793cD0F167589a0f10D",
+    "description": "November retainer",
+    "clientRef": "Acme Co",
+    "lineItems": [
+        {
+            "description": "Blog posts (3x)",
+            "qty": 3,
+            "unitAmountUsd": "20"
+        },
+        {
+            "description": "Editing pass",
+            "qty": 1,
+            "unitAmountUsd": "15"
+        }
+    ],
+    "expiresAt": "2026-11-13T12:11:49.098Z",
+    "payUrl": "http://127.0.0.1:3456/pay/__PrhOMW",
+    "humanReceiptUrl": null,
+    "agent": {
+        "self": "http://127.0.0.1:3456/api/invoices/__PrhOMW",
+        "quoteUrl": "http://127.0.0.1:3456/api/invoices/__PrhOMW/pay",
+        "statusHint": "After POST /pay, poll GET /api/attempts/{attemptId} until phase.terminal."
+    },
+    "latestAttempt": null,
+    "nearRecordTx": null,
+    "notes": [
+        "Non-custodial: Payday never holds funds. Settlement is via NEAR Intents 1Click (https://1click.chaindefuser.com).",
+        "PingPay x402 / Agent Connect is a separate facilitator that also routes through Intents; Payday exposes this native JSON surface so agents can pay without a Ping API key. See docs/agent-payments.md."
+    ]
+}

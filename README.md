@@ -2,7 +2,7 @@
 
 **Get paid in USDC by anyone, from any token on any chain, with one link.**
 
-> Status: live on mainnet at [payday-near.vercel.app](https://payday-near.vercel.app) (NEAR Hackathon, Nov 2026). Link creation, live quotes, status tracking, the receipt and the dashboard all work against the 1Click API. First real payment verified on 2026-11-03: 2.023 USDC on Solana delivered exactly 2.00 USDC on Base.
+> Status: live on mainnet at [payday-near.vercel.app](https://payday-near.vercel.app) (NEAR Hackathon, Nov 2026). Link creation, live quotes, status tracking, the receipt and the dashboard all work against the 1Click API. First real payment verified on 2026-11-03: 2.020567 USDC on Solana deposited, exactly 2.00 USDC delivered on Base (~20s); excess auto-refunded.
 
 ## The problem
 I'm a Nigerian freelance writer. International clients pay me in whatever they hold: USDT on Tron, ETH on Arbitrum, SOL. Every invoice turns into a conversation about which coin and which network. Mistakes cost money, bridges and middlemen take a cut, and confused clients put off paying.
@@ -57,6 +57,11 @@ npm run build      # production build
 | `ONECLICK_API_KEY` | No | 1Click partner JWT, sent as `X-API-Key` for the lower partner fee |
 | `SUPABASE_URL` | For deploys | Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | For deploys | Server-only key. Never commit it. |
+| `NEAR_INVOICE_CONTRACT_ID` | Optional | Deployed invoice-registry account id |
+| `NEAR_RELAYER_ACCOUNT_ID` | Optional | Account that signs `record_invoice` |
+| `NEAR_RELAYER_KEY` | Optional | `ed25519:…` secret for the relayer (Vercel only) |
+| `NEAR_NETWORK` | Optional | `mainnet` (default) or `testnet` |
+| `NEXT_PUBLIC_APP_URL` | Optional | Canonical site URL for agent invoice links |
 
 ### Production (Vercel + Supabase)
 1. Create a Supabase project and run [`supabase/migrations/0001_init.sql`](supabase/migrations/0001_init.sql) in its SQL editor.
@@ -74,6 +79,12 @@ npm run build      # production build
 - The dashboard is secured by a secret link (only a hash of its token is stored), not by a full login.
 - Status updates come from polling (every 5 s on open pages, and on each dashboard load), not webhooks.
 - The naira figure is an approximate mid-market rate from open.er-api.com, for display only.
+
+## Features (branch `features-v2`)
+- **CSV export** from the dashboard (`GET /api/dashboard/export`) with 1Click statuses (`SUCCESS`, `REFUNDED`, `INCOMPLETE_DEPOSIT`, …) and explorer tx links.
+- **Line-item invoices** (optional). Stored in `payment_links.line_items` — run `supabase/migrations/0002_line_items.sql`.
+- **NEAR invoice registry** (scaffold): `contracts/invoice-registry` records fingerprints only; wire with `NEAR_INVOICE_CONTRACT_ID` + relayer env after you deploy. See that folder's README. Migration: `0003_near_record.sql`.
+- **AI agent payments**: `GET /api/invoices/:id` and `POST /api/invoices/:id/pay` on the existing 1Click flow. See [`docs/agent-payments.md`](docs/agent-payments.md). PingPay x402 is cited there but **not** integrated (no Ping API key).
 
 ## What's next
 Demo video and X post for the hackathon submission. Optional later: an invoice agent, webhook-based status, and wallet connect for one-click client payments.

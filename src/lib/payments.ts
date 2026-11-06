@@ -7,10 +7,12 @@ import {
   requestQuote,
   type Token,
 } from "./oneclick";
+import { recordInvoiceSettlement } from "./near-registry";
 import { newDashboardToken, newId, newLinkId, hashToken } from "./secrets";
 import { linkStatus, mapStatus, liveAmounts, type LiveAmounts } from "./status";
 import { getStore, type PaymentAttempt, type PaymentLink, type Store } from "./store";
 import type { CreateLinkInput } from "./validation";
+import { txExplorerUrl } from "./explorer";
 
 export class UserError extends Error {
   constructor(message: string, public readonly status = 400, public readonly field?: string) {
@@ -38,9 +40,11 @@ export async function createLink(
     amountBaseUnits: input.amountBaseUnits,
     description: input.description,
     clientRef: input.clientRef,
+    lineItems: input.lineItems,
     expiresAt: new Date(now.getTime() + input.expiresInDays * DAY_MS).toISOString(),
     createdAt: now.toISOString(),
     paidAt: null,
+    nearRecordTx: null,
   };
   await store.createLink(link);
   return { link, dashboardToken };
@@ -56,8 +60,10 @@ export function publicLink(link: PaymentLink, now = new Date()) {
     amountUsd: link.amountUsd,
     description: link.description,
     clientRef: link.clientRef,
+    lineItems: link.lineItems ?? [],
     expiresAt: link.expiresAt,
     status: linkStatus(link, now),
+    nearRecordTx: link.nearRecordTx,
   };
 }
 
@@ -130,7 +136,7 @@ export async function createAttempt(
     updatedAt: now.toISOString(),
   };
   await store.createAttempt(attempt);
-  return { attempt, quote: q };
+  return { attempt, quote: q, link };
 }
 
 /** Fetch the latest status from 1Click, save it, and mark the link paid when the payment succeeds. */
@@ -138,6 +144,7 @@ export async function refreshAttempt(attemptId: string, store: Store = getStore(
   const attempt = await store.getAttempt(attemptId);
   if (!attempt) throw new UserError("Payment not found.", 404);
   let live: LiveAmounts | null = null;
+  let justSucceeded = false;
   if (!mapStatus(attempt.status).terminal) {
     const s = await getStatus(attempt.depositAddress, attempt.depositMemo ?? undefined);
     const d = s.swapDetails;
@@ -153,15 +160,24 @@ export async function refreshAttempt(attemptId: string, store: Store = getStore(
     };
     await store.updateAttempt(attempt.id, patch);
     Object.assign(attempt, patch);
-    if (s.status === "SUCCESS") await store.markLinkPaid(attempt.linkId, attempt.updatedAt);
-  }
-  else if (opts.withLiveAmounts) {
+    if (s.status === "SUCCESS") {
+      await store.markLinkPaid(attempt.linkId, attempt.updatedAt);
+      justSucceeded = true;
+    }
+  } else if (opts.withLiveAmounts) {
     // Finished payments are not re-saved; this read only feeds the receipt's amounts and may fail harmlessly.
     live = await getStatus(attempt.depositAddress, attempt.depositMemo ?? undefined)
       .then((s) => liveAmounts(s.swapDetails))
       .catch(() => null);
   }
-  const link = await store.getLink(attempt.linkId);
+  let link = await store.getLink(attempt.linkId);
+  if (justSucceeded && link && !link.nearRecordTx) {
+    const recorded = await recordInvoiceSettlement(link, attempt);
+    if (recorded.ok && recorded.txHash) {
+      await store.setLinkNearRecordTx(link.id, recorded.txHash);
+      link = { ...link, nearRecordTx: recorded.txHash };
+    }
+  }
   return { attempt, link, phase: mapStatus(attempt.status), live };
 }
 
@@ -179,4 +195,71 @@ export async function getLinkView(id: string, store: Store = getStore(), now = n
     receiptId = attempts.find((a) => a.status === "SUCCESS")?.id ?? null;
   }
   return { ...view, receiptId };
+}
+
+/** Machine-readable invoice for agents (and humans). */
+export function agentInvoiceView(
+  link: PaymentLink,
+  opts: {
+    baseUrl: string;
+    now?: Date;
+    latestAttempt?: PaymentAttempt | null;
+  },
+) {
+  const now = opts.now ?? new Date();
+  const pub = publicLink(link, now);
+  const attempt = opts.latestAttempt ?? null;
+  const phase = attempt ? mapStatus(attempt.status) : null;
+  const depositTx =
+    attempt?.originTxs[0] && txExplorerUrl(attempt.originChain, attempt.originTxs[0].hash, attempt.originTxs[0].explorerUrl);
+  const deliveryTx =
+    attempt?.destinationTxs[0] &&
+    txExplorerUrl(link.payoutChain, attempt.destinationTxs[0].hash, attempt.destinationTxs[0].explorerUrl);
+
+  return {
+    schema: "payday.invoice.v1",
+    id: link.id,
+    status: pub.status,
+    amount: { usd: link.amountUsd, currency: "USDC", payoutChain: link.payoutChain, payoutChainName: pub.payoutChainName },
+    recipient: link.recipientAddress,
+    description: link.description,
+    clientRef: link.clientRef || null,
+    lineItems: link.lineItems ?? [],
+    expiresAt: link.expiresAt,
+    payUrl: `${opts.baseUrl}/pay/${link.id}`,
+    humanReceiptUrl: attempt?.status === "SUCCESS" ? `${opts.baseUrl}/receipt/${attempt.id}` : null,
+    agent: {
+      /** GET this URL for the same JSON. */
+      self: `${opts.baseUrl}/api/invoices/${link.id}`,
+      /**
+       * POST { originAsset, refundTo } to create a 1Click quote (same as /api/links/:id/quote).
+       * Response includes depositAddress and amountInFormatted the agent must send.
+       */
+      quoteUrl: `${opts.baseUrl}/api/invoices/${link.id}/pay`,
+      /** Poll GET /api/attempts/:attemptId after quoting. */
+      statusHint: "After POST /pay, poll GET /api/attempts/{attemptId} until phase.terminal.",
+    },
+    latestAttempt: attempt
+      ? {
+          id: attempt.id,
+          status: attempt.status,
+          phase: phase?.phase ?? null,
+          label: phase?.label ?? null,
+          originSymbol: attempt.originSymbol,
+          originChain: attempt.originChain,
+          depositAddress: attempt.depositAddress,
+          depositMemo: attempt.depositMemo,
+          amountInFormatted: attempt.amountInFormatted,
+          amountOutFormatted: attempt.amountOutFormatted,
+          quoteExpiresAt: attempt.quoteExpiresAt,
+          depositTxUrl: depositTx || null,
+          deliveryTxUrl: deliveryTx || null,
+        }
+      : null,
+    nearRecordTx: link.nearRecordTx,
+    notes: [
+      "Non-custodial: Payday never holds funds. Settlement is via NEAR Intents 1Click (https://1click.chaindefuser.com).",
+      "PingPay x402 / Agent Connect is a separate facilitator that also routes through Intents; Payday exposes this native JSON surface so agents can pay without a Ping API key. See docs/agent-payments.md.",
+    ],
+  };
 }

@@ -86,6 +86,19 @@ export default function ReceiptPage() {
         </header>
         <div className="space-y-4 p-5 sm:p-7">
           {phase.phase !== "delivered" && <Alert kind="warn">This payment is not complete yet: {phase.guidance}</Alert>}
+          {!!link?.lineItems?.length && (
+            <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <Eyebrow>Line items</Eyebrow>
+              <ul className="mt-2 divide-y divide-slate-200 text-sm">
+                {link.lineItems.map((item, i) => (
+                  <li key={i} className="flex justify-between gap-3 py-1.5">
+                    <span className="text-slate-800">{item.qty} × {item.description}</span>
+                    <span className="tabular-nums font-medium text-slate-950">${(item.qty * Number(item.unitAmountUsd)).toFixed(2)}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
           {rows.length > 0 && (
             <dl className="divide-y divide-slate-100 text-sm">
               {rows.map(([k, v, m]) => (
