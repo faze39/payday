@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Reveal } from "@/components/motion";
 export const FEATURES = [
   {
     title: "A link, not a negotiation",
@@ -88,32 +87,38 @@ export function FeatureGrid() {
   return (
     <div className="feature-grid">
       {FEATURES.map((item, i) => (
-        <Reveal key={item.title} delay={(i % 3) * 60}>
-          <article className="feature-card">
-            <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d={item.path} />
-            </svg>
-            <div>
-              <h3>{item.title}</h3>
-              <p>{item.body}</p>
-            </div>
-          </article>
-        </Reveal>
+        <article className="feature-card" key={item.title}>
+          <span className="feature-index">
+            {String(i + 1).padStart(2, "0")}
+          </span>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d={item.path} />
+          </svg>
+          <div>
+            <h3>{item.title}</h3>
+            <p>{item.body}</p>
+          </div>
+        </article>
       ))}
     </div>
   );
 }
 export function StepList() {
   return (
-    <ol>
+    <ol className="payment-stages">
       {STEPS.map((item, i) => (
-        <Reveal as="li" key={item.title} className="step-row">
-          <span className="step-num">0{i + 1}</span>
+        <li key={item.title} className="step-row">
+          <span className="step-num">
+            {["CREATE", "SHARE", "ROUTE", "RECEIVE"][i]}
+          </span>
           <div>
             <h3>{item.title}</h3>
             <p className="lead">{item.body}</p>
           </div>
-        </Reveal>
+          <span className="step-arrow" aria-hidden="true">
+            ↗
+          </span>
+        </li>
       ))}
     </ol>
   );
@@ -121,9 +126,12 @@ export function StepList() {
 export function FaqList({ all = false }: { all?: boolean }) {
   return (
     <div className="faq-list">
-      {FAQS.slice(0, all ? undefined : 4).map((item) => (
-        <details className="faq-item" key={item.q}>
-          <summary>{item.q}</summary>
+      {FAQS.slice(0, all ? undefined : 4).map((item, i) => (
+        <details className="faq-item" key={item.q} id={`question-${i + 1}`}>
+          <summary>
+            <span className="faq-index">{String(i + 1).padStart(2, "0")}</span>
+            <span>{item.q}</span>
+          </summary>
           <p className="faq-body">{item.a}</p>
         </details>
       ))}
@@ -133,10 +141,10 @@ export function FaqList({ all = false }: { all?: boolean }) {
 export function MarketingCta() {
   return (
     <div className="marketing-cta">
-      <h2>
-        Make it a <em>Payday.</em>
-      </h2>
-      <p>Your next invoice can be a link.</p>
+      <div>
+        <p className="eyebrow">WORK DONE? NEXT STEP.</p>
+        <h2>Put a link on it.</h2>
+      </div>
       <Link className="btn-primary" href="/#create">
         Create a payment link <span aria-hidden="true">↗</span>
       </Link>

@@ -6,45 +6,72 @@ export const metadata: Metadata = { title: "Features" };
 export default function FeaturesPage() {
   return (
     <MarketingShell
-      eyebrow="The toolkit"
-      title="Less chasing. More getting paid."
-      lead="Payment links, itemised invoices and a clear trail from deposit to receipt. Built for freelancers who work across chains."
+      eyebrow="THE WORKING KIT"
+      title="An invoice is only the beginning."
+      lead="From the first ask to the accounting afterwards. The tools to request, receive and reconcile cross-chain payments, without a shared balance."
     >
       <FeatureGrid />
       <section className="inner-note two-col">
         <div>
-          <p className="eyebrow">Made for your records</p>
+          <p className="eyebrow">CLOSE THE BOOKS, TOO</p>
           <h2>
-            Nothing lost between
+            Keep the record.
             <br />
-            the invoice and the receipt.
+            Skip the spreadsheet archaeology.
           </h2>
         </div>
         <div>
           <p>
-            Your private dashboard keeps paid, pending and refunded links in one
-            place. Export CSV records with transaction links when it is time to
-            reconcile.
+            Your private dashboard keeps paid, pending and refunded links
+            together. Export CSV records with transaction links when it is time
+            to reconcile.
           </p>
           <Link href="/dashboard" className="text-link">
             Open your dashboard →
           </Link>
         </div>
       </section>
-      <section className="technical-note">
-        <span className="eyebrow">Development note</span>
+      <section className="api-workbench">
+        <div>
+          <p className="eyebrow">FOR THE PROGRAMMABLE SIDE</p>
+          <h2>
+            Same invoice.
+            <br />
+            Another interface.
+          </h2>
+          <p className="lead">
+            Agents can read an invoice, request a quote and poll the payment
+            status. They still send the deposit from their own wallet.
+          </p>
+          <a
+            className="text-link"
+            href="https://github.com/faze39/payday/blob/main/docs/agent-payments.md"
+          >
+            Read the API documentation ↗
+          </a>
+        </div>
+        <div className="endpoint-sheet">
+          <p className="tiny-label">INVOICE API / AVAILABLE NOW</p>
+          <code>
+            <span>GET</span> /api/invoices/:id
+          </code>
+          <code>
+            <span>POST</span> /api/invoices/:id/pay
+          </code>
+          <code>
+            <span>GET</span> /api/attempts/:id
+          </code>
+          <p>Read → quote → send deposit → poll</p>
+        </div>
+      </section>
+      <aside className="technical-note">
+        <span className="eyebrow">WHAT IS NOT LIVE</span>
         <p>
           The NEAR invoice registry is a scaffold, not a deployed contract.
           Agent payments use the working 1Click flow. PingPay x402 is not
           integrated.
         </p>
-        <a
-          className="text-link"
-          href="https://github.com/faze39/payday/blob/main/docs/agent-payments.md"
-        >
-          Read the agent API documentation ↗
-        </a>
-      </section>
+      </aside>
       <MarketingCta />
     </MarketingShell>
   );

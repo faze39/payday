@@ -30,7 +30,7 @@ export function SiteHeader() {
       : pathname === href || pathname.startsWith(`${href}/`);
 
   return (
-    <header className="sticky top-0 z-20 border-b border-white/10 bg-black/85 backdrop-blur-xl">
+    <header className="site-header relative z-20">
       <nav
         className="wrap flex items-center justify-between gap-4 py-5"
         aria-label="Primary"
@@ -39,7 +39,7 @@ export function SiteHeader() {
           <Logo dark />
         </Link>
 
-        <ul className="nav-pill hidden lg:flex">
+        <ul className="desktop-nav hidden lg:flex">
           {NAV.map((item) => (
             <li key={item.href}>
               <Link
@@ -54,16 +54,10 @@ export function SiteHeader() {
         </ul>
 
         <div className="hidden items-center gap-2 sm:flex">
-          <Link
-            href="/#create"
-            className="rounded-lg border border-white/15 bg-white/5 px-3.5 py-1.5 text-sm font-medium text-white transition hover:border-emerald-400/50 hover:bg-white/10"
-          >
+          <Link href="/#create" className="nav-secondary">
             Create
           </Link>
-          <Link
-            href="/dashboard"
-            className="rounded-lg bg-[#5fd29b] px-3.5 py-1.5 text-sm font-semibold text-black transition hover:bg-emerald-300"
-          >
+          <Link href="/dashboard" className="nav-action">
             Dashboard
           </Link>
         </div>
@@ -107,13 +101,14 @@ export function SiteHeader() {
       {open ? (
         <div
           id="mobile-nav"
-          className="border-t border-white/10 bg-slate-950 px-4 py-4 lg:hidden"
+          className="border-t border-white/10 bg-[#101815] px-4 py-4 lg:hidden"
         >
           <ul className="space-y-1">
             {NAV.map((item) => (
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={() => setMenuPath(null)}
                   className={`block rounded-lg px-3 py-2 ${isActive(item.href) ? "bg-white/10 text-white" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
                   aria-current={isActive(item.href) ? "page" : undefined}
                 >
@@ -124,6 +119,7 @@ export function SiteHeader() {
             <li>
               <Link
                 href="/#create"
+                onClick={() => setMenuPath(null)}
                 className="block rounded-lg px-3 py-2 text-slate-300 hover:bg-white/5 hover:text-white"
               >
                 Create link
@@ -132,7 +128,8 @@ export function SiteHeader() {
             <li>
               <Link
                 href="/dashboard"
-                className="mt-1 block rounded-lg bg-[#5fd29b] px-3 py-2 text-center font-semibold text-black hover:bg-emerald-300"
+                onClick={() => setMenuPath(null)}
+                className="mt-1 block rounded-lg bg-[#d5f66b] px-3 py-2 text-center font-semibold text-black hover:bg-[#e5ff99]"
               >
                 Dashboard
               </Link>

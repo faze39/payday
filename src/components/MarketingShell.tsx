@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Reveal } from "@/components/motion";
+
 export function MarketingShell({
   eyebrow,
   title,
@@ -14,13 +14,18 @@ export function MarketingShell({
   return (
     <div className="marketing inner-page">
       <div className="wrap">
-        <Reveal>
-          <header className="inner-heading">
-            <p className="eyebrow">{eyebrow}</p>
+        <header className="inner-heading">
+          <div className="page-index">
+            <span className="eyebrow">{eyebrow}</span>
+            <span className="index-mark" aria-hidden="true">
+              ↘
+            </span>
+          </div>
+          <div>
             <h1 className="display">{title}</h1>
             <p className="lead">{lead}</p>
-          </header>
-        </Reveal>
+          </div>
+        </header>
         <div className="inner-content">{children}</div>
       </div>
     </div>

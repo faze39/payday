@@ -5,16 +5,16 @@ import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
 import "./globals.css";
 
-const instrument = localFont({
-  src: "./fonts/instrument-sans.woff",
-  weight: "400 700",
-  variable: "--font-instrument",
+const heading = localFont({
+  src: "./fonts/syne.ttf",
+  weight: "400 800",
+  variable: "--font-heading",
   display: "swap",
 });
-const serif = localFont({
-  src: "./fonts/instrument-serif.woff2",
-  variable: "--font-instrument-serif",
-  weight: "400",
+const body = localFont({
+  src: "./fonts/dm-sans.ttf",
+  variable: "--font-body",
+  weight: "100 1000",
   display: "swap",
 });
 const mono = JetBrains_Mono({
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#101815",
   width: "device-width",
   initialScale: 1,
 };
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
-      className={`h-full antialiased ${instrument.variable} ${serif.variable} ${mono.variable}`}
+      className={`h-full antialiased ${heading.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900 selection:bg-emerald-200 selection:text-emerald-950">
         <SiteHeader />

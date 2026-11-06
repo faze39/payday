@@ -1,24 +1,21 @@
 import Link from "next/link";
-import { Logo } from "@/components/Logo";
 export function SiteFooter() {
   return (
     <footer className="site-footer">
       <div className="wrap">
         <div className="footer-top">
           <div>
-            <Link href="/" aria-label="Payday home">
-              <Logo dark />
+            <p className="eyebrow">INDEPENDENT WORK. DIRECT PAYMENTS.</p>
+            <Link href="/#create" className="footer-invitation">
+              Make the next one
+              <br />a Payday. <span aria-hidden="true">↗</span>
             </Link>
-            <p className="lead">
-              Your work. Your wallet.
-              <br />
-              One less payment conversation.
-            </p>
           </div>
           <div className="footer-links">
             <div>
               <p>Explore</p>
               {[
+                ["Home", ""],
                 ["Features", "features"],
                 ["How it works", "how-it-works"],
                 ["Pricing", "pricing"],
@@ -40,8 +37,11 @@ export function SiteFooter() {
             </div>
           </div>
         </div>
+        <div className="footer-wordmark" aria-hidden="true">
+          payday<span>↗</span>
+        </div>
         <div className="footer-bottom">
-          <span>© 2026 Payday. Built for the NEAR Protocol Hackathon.</span>
+          <span>© 2026 Payday · NEAR Protocol Hackathon</span>
           <span>Non-custodial. USDC to your wallet.</span>
         </div>
       </div>

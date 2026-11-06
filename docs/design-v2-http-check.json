@@ -1,0 +1,56 @@
+{
+  "checkedAt": "2026-11-06T22:42:43.555523+01:00",
+  "zone": "WAT (Africa/Lagos)",
+  "baseUrl": "http://localhost:3101",
+  "pages": [
+    {
+      "route": "/",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/features",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/how-it-works",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/pricing",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/faq",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/privacy",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/terms",
+      "status": 200,
+      "h1": 1,
+      "navigation": "all seven links present"
+    },
+    {
+      "route": "/dashboard",
+      "status": 200,
+      "note": "Existing client-rendered dashboard loading shell; no dashboard key supplied."
+    }
+  ],
+  "stylesheetAndPreloadAssetsChecked": 5,
+  "browserQA": "pending; no browser capability exposed to executor"
+}
