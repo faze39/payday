@@ -1,4 +1,7 @@
-import Link from "next/link";
+import {
+  MarketingLink as Link,
+  PaperReveal,
+} from "@/components/marketing-motion";
 export const FEATURES = [
   {
     title: "A link, not a negotiation",
@@ -87,7 +90,12 @@ export function FeatureGrid() {
   return (
     <div className="feature-grid">
       {FEATURES.map((item, i) => (
-        <article className="feature-card" key={item.title}>
+        <PaperReveal
+          as="article"
+          className="feature-card"
+          key={item.title}
+          delay={(i % 2) * 0.08}
+        >
           <span className="feature-index">
             {String(i + 1).padStart(2, "0")}
           </span>
@@ -98,7 +106,7 @@ export function FeatureGrid() {
             <h3>{item.title}</h3>
             <p>{item.body}</p>
           </div>
-        </article>
+        </PaperReveal>
       ))}
     </div>
   );

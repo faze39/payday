@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { MarketingLink as Link } from "@/components/marketing-motion";
 export function SiteFooter() {
   return (
     <footer className="site-footer">

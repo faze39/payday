@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { MarketingLink as Link } from "@/components/marketing-motion";
+import { ApiWorkbench } from "@/components/ApiWorkbench";
 import { MarketingShell } from "@/components/MarketingShell";
 import { FeatureGrid, MarketingCta } from "@/components/MarketingContent";
 export const metadata: Metadata = { title: "Features" };
@@ -50,19 +51,7 @@ export default function FeaturesPage() {
             Read the API documentation ↗
           </a>
         </div>
-        <div className="endpoint-sheet">
-          <p className="tiny-label">INVOICE API / AVAILABLE NOW</p>
-          <code>
-            <span>GET</span> /api/invoices/:id
-          </code>
-          <code>
-            <span>POST</span> /api/invoices/:id/pay
-          </code>
-          <code>
-            <span>GET</span> /api/attempts/:id
-          </code>
-          <p>Read → quote → send deposit → poll</p>
-        </div>
+        <ApiWorkbench />
       </section>
       <aside className="technical-note">
         <span className="eyebrow">WHAT IS NOT LIVE</span>

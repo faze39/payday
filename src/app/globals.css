@@ -96,11 +96,11 @@ body {
   font-size: 14px;
   font-weight: 600;
   padding: 14px 20px;
-  transition: background 0.18s;
+  transition: background 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn-primary span {
   display: inline-block;
-  transition: transform 0.18s;
+  transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .btn-primary:hover {
   background: #e5ff99;
@@ -140,10 +140,10 @@ body {
 .desktop-nav a {
   font-size: 12px;
   position: relative;
+  display: inline-block;
   padding-block: 14px;
 }
-.desktop-nav a[aria-current]::after {
-  content: "";
+.nav-indicator {
   position: absolute;
   bottom: 4px;
   left: 0;
@@ -210,7 +210,7 @@ body {
   height: 2px;
   background: var(--color-accent);
   transform-origin: left;
-  animation: underline-print 0.5s 0.2s both;
+  animation: underline-print 0.5s 0.2s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @keyframes underline-print {
   from {
@@ -282,8 +282,8 @@ body {
   cursor: pointer;
   border-radius: 4px;
   transition:
-    background 0.15s,
-    color 0.15s;
+    background 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.2s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .source-picker button[aria-pressed="true"] {
   background: var(--color-accent);
@@ -316,7 +316,7 @@ body {
   background: var(--color-accent);
   position: absolute;
   right: 0;
-  animation: route-print 0.55s linear;
+  animation: route-print 0.55s cubic-bezier(0.22, 1, 0.36, 1);
 }
 @keyframes route-print {
   from {
@@ -536,7 +536,7 @@ body {
   letter-spacing: -0.04em;
   margin-top: 10px;
 }
-.docket-amount strong span {
+.docket-amount strong > span:last-child {
   font-size: 16px;
   letter-spacing: 0;
 }
@@ -870,7 +870,7 @@ body {
   margin: 35px 0;
   color: var(--color-accent);
 }
-.price span {
+.price > span:last-child {
   display: block;
   font: 11px/1.8 var(--font-mono);
   letter-spacing: 0;
@@ -1436,6 +1436,139 @@ body {
   .btn-primary:hover span,
   .feature-card:hover .feature-index {
     transform: none;
+  }
+}
+
+/* Marketing motion: paper registration, route handoffs and documentation states. */
+.marketing-route-window {
+  overflow: clip;
+  background: var(--desk);
+}
+.source-picker button {
+  position: relative;
+  isolation: isolate;
+}
+.source-picker button[aria-pressed="true"] {
+  background: transparent;
+}
+.token-selection {
+  position: absolute;
+  inset: 0;
+  border-radius: 3px;
+  background: var(--color-accent);
+  z-index: -1;
+}
+.token-name {
+  position: relative;
+}
+.payer-transition {
+  overflow: hidden;
+  min-height: 1.5em;
+}
+.payer-label {
+  display: inline-block;
+}
+.settlement-number,
+.number-digits {
+  display: inline-flex;
+  font: inherit;
+  letter-spacing: inherit;
+}
+.digit-window {
+  display: inline-flex;
+  overflow: hidden;
+  vertical-align: bottom;
+  padding-bottom: 0.05em;
+  margin-bottom: -0.05em;
+}
+.digit-window > span {
+  display: inline-block;
+}
+.nav-secondary,
+.nav-action {
+  display: inline-flex;
+  align-items: center;
+}
+.animated-workbench .example-selector {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 20px;
+}
+.example-selector button {
+  position: relative;
+  padding: 10px 12px;
+  font: 10px var(--font-mono);
+  border: 1px solid var(--line);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.example-selector button[aria-pressed="true"] {
+  color: var(--color-accent);
+}
+.example-step-rule {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  height: 2px;
+  width: 100%;
+  transform-origin: left;
+  background: var(--color-accent);
+}
+.animated-workbench .example-command {
+  white-space: pre-wrap;
+  min-height: 58px;
+}
+.animated-workbench .example-command span {
+  margin: 0;
+  color: inherit;
+}
+.animated-workbench .example-response {
+  min-height: 215px;
+  overflow: hidden;
+  padding-top: 12px;
+}
+.example-response-label {
+  font: 8px var(--font-mono);
+  letter-spacing: 0.05em;
+  color: var(--mint);
+  margin-bottom: 14px;
+}
+.example-response pre {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font: 10px/1.8 var(--font-mono);
+  color: #dce5d8;
+}
+.example-note {
+  font-size: 11px;
+  color: var(--muted);
+  line-height: 1.7;
+  margin-top: 14px;
+}
+.animated-workbench .example-disclaimer {
+  font: 9px/1.8 var(--font-mono);
+  border-top: 1px solid var(--line);
+  padding-top: 16px;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-marketing-page],
+  [data-paper-reveal],
+  .payment-slip,
+  .payment-slip [style],
+  .number-digits,
+  .digit-window > span,
+  .payer-label,
+  .example-response [style],
+  .example-command [style],
+  .source-picker button,
+  .token-selection,
+  .nav-indicator,
+  .site-header a,
+  .site-header button,
+  .marketing a,
+  .site-footer a {
+    transform: none !important;
+    opacity: 1 !important;
   }
 }
 

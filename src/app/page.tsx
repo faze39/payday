@@ -1,4 +1,9 @@
-import Link from "next/link";
+import {
+  MarketingLink as Link,
+  MarketingPage,
+  PaperReveal,
+  SettlementNumber,
+} from "@/components/marketing-motion";
 import { CreateLinkForm } from "@/components/CreateLinkForm";
 import { SettlementDesk } from "@/components/SettlementDesk";
 import { FaqList } from "@/components/MarketingContent";
@@ -8,7 +13,7 @@ const PROOF =
 
 export default function Home() {
   return (
-    <div className="marketing">
+    <MarketingPage className="marketing">
       <section className="desk-hero wrap">
         <div className="hero-editorial">
           <p className="eyebrow">
@@ -78,7 +83,7 @@ export default function Home() {
           </Link>
         </div>
         <div className="editorial-features">
-          <article>
+          <PaperReveal as="article">
             <span className="tiny-label">THE ASK</span>
             <h3>
               One link.
@@ -89,8 +94,8 @@ export default function Home() {
               A USD amount, your wallet and the work you delivered. Line items
               included if you need them.
             </p>
-          </article>
-          <article>
+          </PaperReveal>
+          <PaperReveal as="article" delay={0.08}>
             <span className="tiny-label">THE HANDOFF</span>
             <h3>
               Their token.
@@ -101,8 +106,8 @@ export default function Home() {
               Your client chooses a supported token and gets a live quote.
               1Click handles the swap and bridge.
             </p>
-          </article>
-          <article>
+          </PaperReveal>
+          <PaperReveal as="article" delay={0.16}>
             <span className="tiny-label">THE RECORD</span>
             <h3>
               Paid, with
@@ -113,7 +118,7 @@ export default function Home() {
               Track status, keep the receipt and export a CSV with transaction
               links from your private dashboard.
             </p>
-          </article>
+          </PaperReveal>
         </div>
       </section>
       <section className="proof-section">
@@ -143,18 +148,22 @@ export default function Home() {
               <span>PAYMENT TEST / 001</span>
               <span>DELIVERED ↙</span>
             </div>
-            <div className="docket-amount">
+            <PaperReveal className="docket-amount" direction="across">
               <small>Client deposited · Solana</small>
               <strong>
-                2.020567 <span>USDC</span>
+                <SettlementNumber value="2.020567" /> <span>USDC</span>
               </strong>
-            </div>
-            <div className="docket-amount payout">
+            </PaperReveal>
+            <PaperReveal
+              className="docket-amount payout"
+              direction="across"
+              delay={0.08}
+            >
               <small>Invoice settled · Base</small>
               <strong>
-                2.00 <span>USDC</span>
+                <SettlementNumber value="2.00" /> <span>USDC</span>
               </strong>
-            </div>
+            </PaperReveal>
             <p>
               Exact output delivered. Excess auto-refunded. Payout amount
               documented in the project’s payment test record.
@@ -204,6 +213,6 @@ export default function Home() {
         </div>
         <FaqList />
       </section>
-    </div>
+    </MarketingPage>
   );
 }

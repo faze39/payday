@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import { MarketingLink as Link } from "@/components/marketing-motion";
 import { MarketingShell } from "@/components/MarketingShell";
 import { FaqList, MarketingCta } from "@/components/MarketingContent";
 export const metadata: Metadata = { title: "FAQ" };

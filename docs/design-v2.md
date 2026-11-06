@@ -1,5 +1,7 @@
 # Payday / the settlement desk
 
+This records the original visual pass. The subsequent Motion implementation is documented in [design-v2-motion.md](design-v2-motion.md).
+
 ## Direction
 
 A freelancer's working desk, not an abstract financial universe. The visual language is routing marks, a perforated payment slip, column rules and documentary records. It is deliberately flat, editorial and useful. The only interactive illustration lets a visitor choose an example origin token. It does not fetch a quote, show a fictional amount, claim a completed payment or send funds.

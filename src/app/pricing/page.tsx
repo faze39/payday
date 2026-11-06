@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import {
+  MarketingLink as Link,
+  SettlementNumber,
+} from "@/components/marketing-motion";
 import { MarketingShell } from "@/components/MarketingShell";
 export const metadata: Metadata = { title: "Pricing" };
 export default function PricingPage() {
@@ -13,7 +16,8 @@ export default function PricingPage() {
         <div className="price-summary">
           <p className="eyebrow">PAYDAY PLATFORM FEE</p>
           <div className="price">
-            $0<span>during the hackathon</span>
+            <SettlementNumber value="$0" />
+            <span>during the hackathon</span>
           </div>
           <p>
             The full toolkit.

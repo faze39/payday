@@ -3,6 +3,7 @@ import { JetBrains_Mono } from "next/font/google";
 import localFont from "next/font/local";
 import { SiteFooter } from "@/components/SiteFooter";
 import { SiteHeader } from "@/components/SiteHeader";
+import { MarketingMotionProvider } from "@/components/marketing-motion";
 import "./globals.css";
 
 const heading = localFont({
@@ -45,9 +46,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`h-full antialiased ${heading.variable} ${body.variable} ${mono.variable}`}
     >
       <body className="flex min-h-full flex-col bg-slate-50 font-sans text-slate-900 selection:bg-emerald-200 selection:text-emerald-950">
-        <SiteHeader />
-        <main className="flex-1">{children}</main>
-        <SiteFooter />
+        <MarketingMotionProvider>
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+        </MarketingMotionProvider>
       </body>
     </html>
   );

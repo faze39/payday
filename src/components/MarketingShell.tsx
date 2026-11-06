@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { MarketingPage } from "@/components/marketing-motion";
 
 export function MarketingShell({
   eyebrow,
@@ -12,7 +13,7 @@ export function MarketingShell({
   children: ReactNode;
 }) {
   return (
-    <div className="marketing inner-page">
+    <MarketingPage className="marketing inner-page">
       <div className="wrap">
         <header className="inner-heading">
           <div className="page-index">
@@ -28,6 +29,6 @@ export function MarketingShell({
         </header>
         <div className="inner-content">{children}</div>
       </div>
-    </div>
+    </MarketingPage>
   );
 }
