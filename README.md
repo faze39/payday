@@ -13,7 +13,7 @@ I'm a Nigerian freelance writer. International clients pay me in whatever they h
 3. **NEAR Intents** (1Click API) detects the deposit, swaps and bridges it, and delivers the exact USDC amount to the freelancer's wallet.
 4. **The status page** updates on its own (awaiting deposit → swapping → delivered) and ends with a receipt that has explorer links for both transactions.
 
-Payday never holds funds or keys. It only asks 1Click for quotes and reads status.
+Payday never holds customer funds or customer wallet keys. It asks 1Click for quotes and reads status. The optional invoice registry uses a server-held testnet relayer key only to sign metadata records; it cannot spend customer funds.
 
 ```mermaid
 flowchart LR
@@ -57,10 +57,10 @@ npm run build      # production build
 | `ONECLICK_API_KEY` | No | 1Click partner JWT, sent as `X-API-Key` for the lower partner fee |
 | `SUPABASE_URL` | For deploys | Supabase project URL |
 | `SUPABASE_SERVICE_ROLE_KEY` | For deploys | Server-only key. Never commit it. |
-| `NEAR_INVOICE_CONTRACT_ID` | Optional | Deployed invoice-registry account id |
-| `NEAR_RELAYER_ACCOUNT_ID` | Optional | Account that signs `record_invoice` |
-| `NEAR_RELAYER_KEY` | Optional | `ed25519:…` secret for the relayer (Vercel only) |
-| `NEAR_NETWORK` | Optional | `mainnet` (default) or `testnet` |
+| `NEAR_INVOICE_CONTRACT_ID` | Optional | Testnet invoice-registry account id: `payday-registry-1794060636.testnet` |
+| `NEAR_RELAYER_ACCOUNT_ID` | Optional | Authorized testnet account that signs `record_invoice` |
+| `NEAR_RELAYER_KEY` | Optional | Server-only `ed25519:…` secret, stored as a sensitive production env value |
+| `NEAR_NETWORK` | Optional | `testnet` only (default); independent of mainnet payments |
 | `NEXT_PUBLIC_APP_URL` | Optional | Canonical site URL for agent invoice links |
 
 ### Production (Vercel + Supabase)
@@ -83,7 +83,7 @@ npm run build      # production build
 ## Features (branch `features-v2`)
 - **CSV export** from the dashboard (`GET /api/dashboard/export`) with 1Click statuses (`SUCCESS`, `REFUNDED`, `INCOMPLETE_DEPOSIT`, …) and explorer tx links.
 - **Line-item invoices** (optional). Stored in `payment_links.line_items` — run `supabase/migrations/0002_line_items.sql`.
-- **NEAR invoice registry** (scaffold): `contracts/invoice-registry` records fingerprints only; wire with `NEAR_INVOICE_CONTRACT_ID` + relayer env after you deploy. See that folder's README. Migration: `0003_near_record.sql`.
+- **NEAR testnet invoice registry**: [deployed contract](https://testnet.nearblocks.io/address/payday-registry-1794060636.testnet) records invoice metadata only. The optional server hook runs after a real SUCCESS settlement when its testnet relayer env is configured. A new unpaid invoice is not automatically recorded. Testnet metadata is not payment proof. See [setup and no-payment demo](docs/testnet-registry.md). Migration: `0003_near_record.sql`.
 - **AI agent payments**: `GET /api/invoices/:id` and `POST /api/invoices/:id/pay` on the existing 1Click flow. See [`docs/agent-payments.md`](docs/agent-payments.md). PingPay x402 is cited there but **not** integrated (no Ping API key).
 
 ## What's next

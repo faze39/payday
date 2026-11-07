@@ -54,11 +54,18 @@ export default function FeaturesPage() {
         <ApiWorkbench />
       </section>
       <aside className="technical-note">
-        <span className="eyebrow">WHAT IS NOT LIVE</span>
+        <span className="eyebrow">TESTNET RECORDS, MAINNET PAYMENTS</span>
         <p>
-          The NEAR invoice registry is a scaffold, not a deployed contract.
-          Agent payments use the working 1Click flow. PingPay x402 is not
-          integrated.
+          Invoice fingerprints use a deployed NEAR testnet registry when the
+          server relayer is configured. These are testnet records, not proof of
+          payment. Payments still settle through the mainnet 1Click flow.
+          PingPay x402 is not integrated.{" "}
+          <a
+            className="text-link"
+            href="https://testnet.nearblocks.io/address/payday-registry-1794060636.testnet"
+          >
+            View the testnet contract ↗
+          </a>
         </p>
       </aside>
       <MarketingCta />

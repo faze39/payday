@@ -5,12 +5,13 @@
  * Freelancers do not need NEAR: the server uses a relayer account from env vars.
  *
  * Env (Vercel secrets only — never commit):
- *   NEAR_INVOICE_CONTRACT_ID   e.g. invoice-registry.payday.near  (UNVERIFIED until you deploy)
- *   NEAR_RELAYER_ACCOUNT_ID    e.g. payday-relayer.near
+ *   NEAR_INVOICE_CONTRACT_ID   payday-registry-1794060636.testnet
+ *   NEAR_RELAYER_ACCOUNT_ID    authorized testnet signer
  *   NEAR_RELAYER_KEY           ed25519:… secret key for that account
- *   NEAR_NETWORK               mainnet | testnet (default mainnet)
+ *   NEAR_NETWORK               testnet only (default testnet)
  *
- * UNVERIFIED: live mainnet call with a real relayer key has not been run from this box.
+ * Invoice records are TESTNET metadata, not mainnet payment or settlement proof.
+ * This network setting does not change the independent 1Click payment network.
  */
 
 import type { PaymentAttempt, PaymentLink } from "./store/types";
@@ -22,23 +23,25 @@ export interface RecordResult {
   error?: string;
 }
 
-function networkUrl(network: string): string {
-  return network === "testnet" ? "https://rpc.testnet.near.org" : "https://rpc.mainnet.near.org";
-}
-
 /** Soft-fail wrapper: never throws into the payment path. */
 export async function recordInvoiceSettlement(link: PaymentLink, attempt: PaymentAttempt): Promise<RecordResult> {
   const contractId = process.env.NEAR_INVOICE_CONTRACT_ID?.trim();
   const accountId = process.env.NEAR_RELAYER_ACCOUNT_ID?.trim();
   const privateKey = process.env.NEAR_RELAYER_KEY?.trim();
-  const network = (process.env.NEAR_NETWORK ?? "mainnet").trim();
+  const network = (process.env.NEAR_NETWORK ?? "testnet").trim();
 
   if (!contractId || !accountId || !privateKey) {
     return {
       ok: false,
       skipped:
-        "NEAR_INVOICE_CONTRACT_ID, NEAR_RELAYER_ACCOUNT_ID, and NEAR_RELAYER_KEY are not all set. Deploy contracts/invoice-registry and add the env vars to record on-chain.",
+        "NEAR_INVOICE_CONTRACT_ID, NEAR_RELAYER_ACCOUNT_ID, and NEAR_RELAYER_KEY are not all set. Configure the testnet registry relayer to enable invoice records.",
     };
+  }
+  if (network !== "testnet" || !contractId.endsWith(".testnet") || !accountId.endsWith(".testnet")) {
+    return { ok: false, error: "Invoice records require NEAR testnet and testnet contract/relayer accounts." };
+  }
+  if (attempt.status !== "SUCCESS") {
+    return { ok: false, skipped: "Only confirmed settlements are recorded automatically." };
   }
   if (link.nearRecordTx) return { ok: true, txHash: link.nearRecordTx, skipped: "already recorded" };
 
@@ -63,7 +66,7 @@ export async function recordInvoiceSettlement(link: PaymentLink, attempt: Paymen
     await keyStore.setKey(network, accountId, keyPair);
     const near = await nearAPI.connect({
       networkId: network,
-      nodeUrl: networkUrl(network),
+      nodeUrl: "https://rpc.testnet.near.org",
       keyStore,
       headers: {},
     });
@@ -75,6 +78,9 @@ export async function recordInvoiceSettlement(link: PaymentLink, attempt: Paymen
       gas: BigInt("30000000000000"),
       attachedDeposit: BigInt("0"),
     });
+    if (typeof result.status !== "object" || !("SuccessValue" in result.status)) {
+      return { ok: false, error: "The testnet registry transaction did not complete successfully." };
+    }
     const txHash =
       typeof result?.transaction_outcome?.id === "string"
         ? result.transaction_outcome.id
@@ -83,9 +89,8 @@ export async function recordInvoiceSettlement(link: PaymentLink, attempt: Paymen
           : undefined;
     if (!txHash) return { ok: false, error: "NEAR call returned no transaction hash (UNVERIFIED shape)." };
     return { ok: true, txHash };
-  } catch (err) {
-    const message = err instanceof Error ? err.message : String(err);
-    console.error("[near-registry]", message);
-    return { ok: false, error: message };
+  } catch {
+    // SDK/provider errors can include request data. Never log or return raw errors.
+    return { ok: false, error: "Testnet invoice registry write failed. Payment settlement is unaffected." };
   }
 }
