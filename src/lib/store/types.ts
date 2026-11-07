@@ -1,4 +1,5 @@
 import type { PayoutChainId } from "../chains";
+import type { LineItem } from "../line-items";
 import type { OneClickStatus, TxDetails } from "../oneclick";
 
 export interface PaymentLink {
@@ -11,9 +12,13 @@ export interface PaymentLink {
   amountBaseUnits: string;
   description: string;
   clientRef: string;
+  /** Optional invoice line items. Empty array when unused. */
+  lineItems: LineItem[];
   expiresAt: string;
   createdAt: string;
   paidAt: string | null;
+  /** NEAR invoice-registry tx hash once recorded on-chain (optional). */
+  nearRecordTx: string | null;
 }
 
 export interface PaymentAttempt {
@@ -45,6 +50,7 @@ export interface Store {
   getLink(id: string): Promise<PaymentLink | null>;
   listLinksByOwner(ownerTokenHash: string): Promise<PaymentLink[]>;
   markLinkPaid(id: string, paidAt: string): Promise<void>;
+  setLinkNearRecordTx(id: string, nearRecordTx: string): Promise<void>;
   createAttempt(attempt: PaymentAttempt): Promise<void>;
   getAttempt(id: string): Promise<PaymentAttempt | null>;
   listAttemptsByLink(linkId: string): Promise<PaymentAttempt[]>;

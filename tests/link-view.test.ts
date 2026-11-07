@@ -6,7 +6,9 @@ import type { PaymentAttempt, PaymentLink } from "@/lib/store/types";
 const link: PaymentLink = {
   id: "L1", ownerTokenHash: "h", recipientAddress: "0x2527D02599Ba641c19FEa793cD0F167589a0f10D", payoutChain: "base",
   destAssetId: "x", amountUsd: "2", amountBaseUnits: "2000000", description: "d", clientRef: "", 
-  expiresAt: "2099-01-01T00:00:00.000Z", createdAt: "2026-01-01T00:00:00.000Z", paidAt: null,
+  expiresAt: "2099-01-01T00:00:00.000Z", createdAt: "2026-01-01T00:00:00.000Z", lineItems: [],
+  nearRecordTx: null,
+  paidAt: null,
 };
 const attempt = (id: string, status: PaymentAttempt["status"], createdAt: string): PaymentAttempt => ({
   id, linkId: "L1", originAssetId: "a", originChain: "sol", originSymbol: "USDC", refundTo: "r", depositAddress: "d",

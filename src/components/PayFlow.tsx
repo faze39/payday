@@ -92,6 +92,16 @@ export function PayFlow({ linkId, initialAttemptId }: { linkId: string; initialA
         <p className="mt-3 text-5xl font-semibold tracking-[-0.04em] sm:text-6xl">$<CountUp value={link.amountUsd} /></p>
         <NgnEstimate usd={Number(link.amountUsd)} className="mt-1 text-slate-300" />
         <p className="mt-4 text-base leading-relaxed text-slate-100">{link.description}</p>
+        {!!link.lineItems?.length && (
+          <ul className="mt-4 space-y-1.5 rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-200">
+            {link.lineItems.map((item, i) => (
+              <li key={i} className="flex justify-between gap-3">
+                <span>{item.qty} × {item.description}</span>
+                <span className="tabular-nums text-white">${(item.qty * Number(item.unitAmountUsd)).toFixed(2)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
         <div className="mt-5 border-t border-white/10 pt-4 text-xs leading-relaxed text-slate-300">
           The freelancer receives <span className="font-semibold text-white">{link.amountUsd} USDC</span> on {link.payoutChainName} at{" "}
           <span className="break-all font-mono text-slate-200">{link.recipientAddress}</span>

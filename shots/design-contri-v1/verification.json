@@ -1,0 +1,70 @@
+{
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "heading": "Get paid for\n\nyour work\ndesign\nnot in excuses.",
+      "overflow": false
+    },
+    {
+      "path": "/features",
+      "status": 200,
+      "heading": "Less chasing. More getting paid.",
+      "overflow": false
+    },
+    {
+      "path": "/how-it-works",
+      "status": 200,
+      "heading": "One link. A clear way to your wallet.",
+      "overflow": false
+    },
+    {
+      "path": "/pricing",
+      "status": 200,
+      "heading": "Free to use. Not free to move funds.",
+      "overflow": false
+    },
+    {
+      "path": "/faq",
+      "status": 200,
+      "heading": "Before the first payment.",
+      "overflow": false
+    },
+    {
+      "faqOpens": true
+    },
+    {
+      "mobile": "/",
+      "overflow": false
+    },
+    {
+      "mobile": "/features",
+      "overflow": false
+    },
+    {
+      "mobile": "/how-it-works",
+      "overflow": false
+    },
+    {
+      "mobile": "/pricing",
+      "overflow": false
+    },
+    {
+      "mobile": "/faq",
+      "overflow": false
+    },
+    {
+      "mobileMenuVisible": true
+    },
+    {
+      "mobileNavigation": "http://localhost:3100/pricing"
+    },
+    {
+      "createFormVisible": true
+    },
+    {
+      "dashboardLoads": true
+    }
+  ],
+  "errors": []
+}

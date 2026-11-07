@@ -7,6 +7,14 @@ const toRow = (o: object) =>
 const fromRow = <T>(r: Record<string, unknown>) =>
   Object.fromEntries(Object.entries(r).map(([k, v]) => [k.replace(/_([a-z])/g, (_, c) => c.toUpperCase()), v])) as T;
 
+function normalizeLink(link: PaymentLink): PaymentLink {
+  return {
+    ...link,
+    lineItems: Array.isArray(link.lineItems) ? link.lineItems : [],
+    nearRecordTx: link.nearRecordTx ?? null,
+  };
+}
+
 export class SupabaseStore implements Store {
   private db: SupabaseClient;
 
@@ -20,20 +28,25 @@ export class SupabaseStore implements Store {
   }
 
   async createLink(link: PaymentLink) {
-    SupabaseStore.check(await this.db.from("payment_links").insert(toRow(link)));
+    SupabaseStore.check(await this.db.from("payment_links").insert(toRow(normalizeLink(link))));
   }
   async getLink(id: string) {
     const row = SupabaseStore.check(await this.db.from("payment_links").select("*").eq("id", id).maybeSingle());
-    return row ? fromRow<PaymentLink>(row) : null;
+    return row ? normalizeLink(fromRow<PaymentLink>(row)) : null;
   }
   async listLinksByOwner(hash: string) {
     const rows = SupabaseStore.check(
       await this.db.from("payment_links").select("*").eq("owner_token_hash", hash).order("created_at", { ascending: false }),
     );
-    return (rows ?? []).map((r) => fromRow<PaymentLink>(r));
+    return (rows ?? []).map((r) => normalizeLink(fromRow<PaymentLink>(r)));
   }
   async markLinkPaid(id: string, paidAt: string) {
     SupabaseStore.check(await this.db.from("payment_links").update({ paid_at: paidAt }).eq("id", id).is("paid_at", null));
+  }
+  async setLinkNearRecordTx(id: string, nearRecordTx: string) {
+    SupabaseStore.check(
+      await this.db.from("payment_links").update({ near_record_tx: nearRecordTx }).eq("id", id).is("near_record_tx", null),
+    );
   }
   async createAttempt(a: PaymentAttempt) {
     SupabaseStore.check(await this.db.from("payment_attempts").insert(toRow(a)));
