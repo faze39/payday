@@ -83,7 +83,7 @@ export const FAQS = [
   },
   {
     q: "Is the invoice registry deployed?",
-    a: "Not yet. NEAR invoice-registry contract code is a scaffold in the repository. It is separate from the working payment-link and settlement flow.",
+    a: "Yes, on NEAR testnet. With the server relayer configured, it records invoice fingerprints after settlement. Testnet records are not proof of payment. The independent 1Click payment and settlement flow remains on mainnet.",
   },
 ];
 export function FeatureGrid() {

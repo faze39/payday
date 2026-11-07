@@ -57,6 +57,18 @@ describe("marketing render contracts", () => {
     expect(html.match(/<details\b/g)).toHaveLength(8);
     expect(html.match(/<summary\b/g)).toHaveLength(8);
   });
+  it("distinguishes deployed testnet invoice metadata from mainnet payments", () => {
+    const html = renderToStaticMarkup(createElement(Features));
+    expect(html).toContain("NEAR testnet registry");
+    expect(html).toContain("when the");
+    expect(html).toContain("not proof of");
+    expect(html).toContain("mainnet 1Click flow");
+    expect(html).toContain("https://testnet.nearblocks.io/address/payday-registry-1794060636.testnet");
+    expect(html).not.toContain("a scaffold");
+    const faq = renderToStaticMarkup(createElement(FaqList, { all: true }));
+    expect(faq).toContain("Yes, on NEAR testnet");
+    expect(faq).toContain("server relayer configured");
+  });
   it("pricing separates the temporary platform fee from settlement costs", () => {
     const html = renderToStaticMarkup(createElement(Pricing));
     expect(html).toContain("during the hackathon");
