@@ -18,7 +18,9 @@ Bring **~5 NEAR** on the deployer account so you have headroom; unused storage s
 
 ## Toolchain note
 
-`near-sdk` 5.x needs **rustc ≥ 1.88**. This agent box had 1.85, so `cargo test` was **not** run here. Run tests on your machine after `rustup update`.
+`near-sdk` 5.x needs **rustc >= 1.88**. On 2026-11-07 the box was moved to rustc 1.99.1 via rustup: `cargo test` passes (3/3) and `cargo build --target wasm32-unknown-unknown --release` produces a ~130 KB wasm. Use `cargo near build` for the deploy artifact, since newer rustc wasm output can include features the NEAR runtime rejects.
+
+There is no separate relayer list: the owner account is the relayer. Init with `restrict_to_owner: true` and use the owner's key as `NEAR_RELAYER_KEY`.
 
 ## Deploy (you must run this)
 
@@ -39,11 +41,7 @@ cargo near build
 near contract deploy <CONTRACT_ID> use-file target/near/invoice_registry.wasm \
   without-init-call network-config mainnet sign-with-keychain
 near contract call-function as-transaction <CONTRACT_ID> new \
-  json-args '{"owner":"<YOUR_ACCOUNT>"}' prepaid-gas '30.0 Tgas' \
-  attached-deposit '0 NEAR' \
-  sign-as <YOUR_ACCOUNT> network-config mainnet
-near contract call-function as-transaction <CONTRACT_ID> add_relayer \
-  json-args '{"account_id":"<RELAYER_ACCOUNT>"}' prepaid-gas '30.0 Tgas' \
+  json-args '{"owner":"<YOUR_ACCOUNT>","restrict_to_owner":true}' prepaid-gas '30.0 Tgas' \
   attached-deposit '0 NEAR' \
   sign-as <YOUR_ACCOUNT> network-config mainnet
 ```
@@ -63,6 +61,6 @@ Payday calls `record_invoice` from the server after a `SUCCESS` 1Click status wh
 
 ## Status
 
-- Contract + unit tests: scaffolded
+- Contract compiles, unit tests pass (3/3) after a serializer fix on 2026-11-07
 - Mainnet deploy: **not done from this environment** (needs your keys)
 - Relayer live call: **UNVERIFIED**
