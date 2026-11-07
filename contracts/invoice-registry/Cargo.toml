@@ -3,7 +3,7 @@ name = "invoice-registry"
 version = "0.1.0"
 edition = "2021"
 publish = false
-# Requires rustc >= 1.88 to resolve near-sdk 5.x (this box has 1.85 — run tests on a newer toolchain).
+# Requires rustc >= 1.88 (tested with 1.99.1).
 
 [lib]
 crate-type = ["cdylib"]

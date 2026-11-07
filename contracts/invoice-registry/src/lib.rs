@@ -6,13 +6,11 @@
 //!
 //! UNVERIFIED on mainnet until you deploy and set NEAR_INVOICE_CONTRACT_ID.
 
-use near_sdk::borsh::{BorshDeserialize, BorshSerialize};
-use near_sdk::serde::{Deserialize, Serialize};
 use near_sdk::store::LookupMap;
 use near_sdk::{env, near, require, AccountId, NearToken, PanicOnDefault};
 
-#[derive(BorshDeserialize, BorshSerialize, Serialize, Deserialize, Clone)]
-#[serde(crate = "near_sdk::serde")]
+#[near(serializers = [borsh, json])]
+#[derive(Clone)]
 pub struct InvoiceRecord {
     pub invoice_id: String,
     pub amount_usd: String,
