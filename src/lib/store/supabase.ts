@@ -10,6 +10,8 @@ const fromRow = <T>(r: Record<string, unknown>) =>
 function normalizeLink(link: PaymentLink): PaymentLink {
   return {
     ...link,
+    // PostgREST returns numeric(12,2) as a JSON number; the app/API money contract is a string.
+    amountUsd: String(link.amountUsd),
     lineItems: Array.isArray(link.lineItems) ? link.lineItems : [],
     nearRecordTx: link.nearRecordTx ?? null,
   };
