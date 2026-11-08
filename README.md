@@ -14,7 +14,7 @@ An invoice specifies a USD amount and a USDC receiving wallet. The payer selects
 
 **X demo post: PENDING.** Add the published X post link here after publication. No demo-post URL is available yet.
 
-These are application captures, not a live payment feed. The quote is a historical example, not a current offer or an instruction to send funds. Receiving/deposit addresses and management views have been excluded from the cropped application images.
+These are application captures, not a live payment feed. The quote is a historical example, not a current offer or an instruction to send funds. Receiving/deposit addresses, private management URLs and credentials are excluded from the images.
 
 ![Payday home page and route illustration](docs/media/home-hero.webp)
 
@@ -25,6 +25,10 @@ These are application captures, not a live payment feed. The quote is a historic
 **Quote details:** the deposit address and any payment destination instructions below the amount are cropped out.
 
 ![Quote amount, asset, network and awaiting-deposit status; deposit address omitted](docs/media/quote.webp)
+
+**Dashboard:** historical test-invoice summary and CSV export controls. The private management URL and dashboard credential are not shown.
+
+![Dashboard summary and delivered test invoice, without private management credentials](docs/media/dashboard.webp)
 
 **Historical receipt:** this frame preserves the original interface. Its `2.023038 USDC` client-input figure is the older quoted amount, not the actual on-chain deposit. See the transaction evidence below.
 
